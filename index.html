@@ -391,6 +391,82 @@ button{
         </div>
     </div>
 
+<fieldset>
+        <legend>Photo-mesure & diagnostic IA — OD / OG</legend>
+        <p class="measure-help">
+            Fonction expérimentale : photo OD/OG, mesures par calibration cornéenne, puis avis IA descriptif selon une logique segment antérieur/contactologie. Gradation demandée selon l’échelle d’Efron 0 à 4. L’IA doit aussi signaler si une lentille de contact est visible.
+        </p>
+        <div class="ai-config-box">
+            <label>Endpoint IA Cloudflare Worker</label>
+            <input id="eyeAiEndpoint" type="text" value="https://opto-diagnostic-ai.ulysse-chemelle.workers.dev/" placeholder="URL du Worker Cloudflare">
+            <small>Le bouton IA envoie la photo vers ton Worker Cloudflare. Évite les données nominatives sur les photos pour un usage réel patient.</small>
+        </div>
+
+        <div class="photo-measure-grid">
+            <div>
+                <h4>Œil droit — OD</h4>
+                <div class="file-picker-box">
+                    <label>Prendre une photo OD</label><input id="eyeMeasureCamera_od" type="file" accept="image/*" capture="environment">
+                    <label>Choisir galerie OD</label><input id="eyeMeasureGallery_od" type="file" accept="image/*">
+                </div>
+                <div id="eyeMeasureFileInfo_od" style="font-size:13px;color:#555;margin:4px 0 8px;">Aucune photo OD chargée</div>
+                <div class="measure-canvas-wrap"><canvas id="eyeMeasureCanvas_od"></canvas></div>
+                <div class="eye-action-panel">
+                    <label>DHIV OD de référence (mm)</label><input id="eyeMeasureCorneaMm_od" type="number" step="0.1" min="9" max="14.5" value="12.5">
+                    <div class="eye-action-row">
+                        <button type="button" class="small-btn" onclick="eyeMeasureStart('od')">Mesure OD</button>
+                        <button type="button" class="small-btn" onclick="eyeMeasureUndo('od')">Annuler point</button>
+                        <button type="button" class="small-btn" onclick="eyeMeasureReset('od')">Réinitialiser points</button>
+                        <button type="button" class="small-btn" onclick="eyeMeasureClearPhoto('od')">Supprimer photo</button>
+                        <button type="button" class="main-btn" onclick="eyeMeasureApply('od')">Copier mesures OD</button>
+                        <div id="eyeMeasureStatus_od" class="measure-status">Importe une photo OD, puis clique sur « Mesure OD ».</div>
+                    </div>
+                    <div class="eye-action-row">
+                        <button type="button" class="main-btn" onclick="eyeAiAnalyze('od')">Diagnostic IA OD</button>
+                        <button type="button" class="small-btn" onclick="eyeAiApplyLast('od')">Copier avis IA OD dans l’anamnèse</button>
+                        <div id="eyeAiStatus_od" class="measure-status">IA OD : en attente.</div>
+                    </div>
+                    <textarea id="eyeAiResult_od" placeholder="Avis IA OD"></textarea>
+                    <div class="ai-warn">Aide descriptive non diagnostique. En cas de douleur, baisse d’acuité, photophobie, opacité cornéenne, ulcère suspect ou rougeur importante : orientation médicale.</div>
+                </div>
+                <div class="measure-results" style="margin-top:10px;"><table><tr><th>Mesure</th><th>Pixels</th><th>mm</th></tr><tr><td>Cornée horizontale</td><td id="emCorneaPx_od">—</td><td id="emCorneaMm_od">—</td></tr><tr><td>Pupille</td><td id="emPupilPx_od">—</td><td id="emPupilMm_od">—</td></tr><tr><td>Fente palpébrale</td><td id="emAperturePx_od">—</td><td id="emApertureMm_od">—</td></tr><tr><td>Angle paupière sup. TABO</td><td>—</td><td id="emUpperAngle_od">—</td></tr><tr><td>Angle paupière inf. TABO</td><td>—</td><td id="emLowerAngle_od">—</td></tr></table></div>
+                <label>Commentaire qualité / limites OD</label><textarea id="eyeMeasureComment_od" style="height:70px;" readonly></textarea>
+            </div>
+            <div>
+                <h4>Œil gauche — OG</h4>
+                <div class="file-picker-box">
+                    <label>Prendre une photo OG</label><input id="eyeMeasureCamera_og" type="file" accept="image/*" capture="environment">
+                    <label>Choisir galerie OG</label><input id="eyeMeasureGallery_og" type="file" accept="image/*">
+                </div>
+                <div id="eyeMeasureFileInfo_og" style="font-size:13px;color:#555;margin:4px 0 8px;">Aucune photo OG chargée</div>
+                <div class="measure-canvas-wrap"><canvas id="eyeMeasureCanvas_og"></canvas></div>
+                <div class="eye-action-panel">
+                    <label>DHIV OG de référence (mm)</label><input id="eyeMeasureCorneaMm_og" type="number" step="0.1" min="9" max="14.5" value="12.5">
+                    <div class="eye-action-row">
+                        <button type="button" class="small-btn" onclick="eyeMeasureStart('og')">Mesure OG</button>
+                        <button type="button" class="small-btn" onclick="eyeMeasureUndo('og')">Annuler point</button>
+                        <button type="button" class="small-btn" onclick="eyeMeasureReset('og')">Réinitialiser points</button>
+                        <button type="button" class="small-btn" onclick="eyeMeasureClearPhoto('og')">Supprimer photo</button>
+                        <button type="button" class="main-btn" onclick="eyeMeasureApply('og')">Copier mesures OG</button>
+                        <div id="eyeMeasureStatus_og" class="measure-status">Importe une photo OG, puis clique sur « Mesure OG ».</div>
+                    </div>
+                    <div class="eye-action-row">
+                        <button type="button" class="main-btn" onclick="eyeAiAnalyze('og')">Diagnostic IA OG</button>
+                        <button type="button" class="small-btn" onclick="eyeAiApplyLast('og')">Copier avis IA OG dans l’anamnèse</button>
+                        <div id="eyeAiStatus_og" class="measure-status">IA OG : en attente.</div>
+                    </div>
+                    <textarea id="eyeAiResult_og" placeholder="Avis IA OG"></textarea>
+                    <div class="ai-warn">Aide descriptive non diagnostique. En cas de douleur, baisse d’acuité, photophobie, opacité cornéenne, ulcère suspect ou rougeur importante : orientation médicale.</div>
+                </div>
+                <div class="measure-results" style="margin-top:10px;"><table><tr><th>Mesure</th><th>Pixels</th><th>mm</th></tr><tr><td>Cornée horizontale</td><td id="emCorneaPx_og">—</td><td id="emCorneaMm_og">—</td></tr><tr><td>Pupille</td><td id="emPupilPx_og">—</td><td id="emPupilMm_og">—</td></tr><tr><td>Fente palpébrale</td><td id="emAperturePx_og">—</td><td id="emApertureMm_og">—</td></tr><tr><td>Angle paupière sup. TABO</td><td>—</td><td id="emUpperAngle_og">—</td></tr><tr><td>Angle paupière inf. TABO</td><td>—</td><td id="emLowerAngle_og">—</td></tr></table></div>
+                <label>Commentaire qualité / limites OG</label><textarea id="eyeMeasureComment_og" style="height:70px;" readonly></textarea>
+            </div>
+        </div>
+        <div style="margin-top:10px;font-size:13px;line-height:1.35;"><span class="measure-chip">1-2 : limbe nasal/temporal</span><span class="measure-chip">3-4 : bords pupille</span><span class="measure-chip">5-6 : fente palpébrale</span><span class="measure-chip">7-8 : angle paupière sup. TABO</span><span class="measure-chip">9-10 : angle paupière inf. TABO</span></div>
+        <label style="margin-top:12px;">Synthèse IA copiée dans l’anamnèse</label>
+        <textarea id="anam_ia" style="height:130px;" placeholder="Les avis IA OD/OG copiés apparaîtront ici et seront inclus dans le PDF."></textarea>
+    </fieldset>
+
     <fieldset>
         <legend>Habitudes visuelles</legend>
 
