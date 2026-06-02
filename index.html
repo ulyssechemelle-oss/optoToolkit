@@ -1416,32 +1416,56 @@ function eyeAiApplyLast(side){const text=em(`eyeAiResult_${side}`)?.value||'';co
 function eyeAiApplyStructured(side,data){const hyper=Number(data.hyperemie_conjonctivale_bulbaire_grade_efron),limb=Number(data.hyperemie_limbique_grade_efron),paup=Number(data.paupiere_bord_libre_grade_efron);if(Number.isFinite(hyper)&&em(`cb_${side}_hyper`))em(`cb_${side}_hyper`).value=String(Math.max(0,Math.min(4,Math.round(hyper))));if(Number.isFinite(paup)&&em(`pau_${side}_deg`))em(`pau_${side}_deg`).value=String(Math.max(0,Math.min(4,Math.round(paup))));if(String(data.pinguecula||'').toLowerCase().includes('prés')||String(data.pinguecula||'').toLowerCase().includes('possible')){const cb=em(`cb_${side}_ping`);if(cb)cb.checked=true;}const cbRem=em('cb_rem');if(cbRem){const alertes=Array.isArray(data.signes_alerte)?data.signes_alerte.join(', '):String(data.signes_alerte||'pas de signe');cbRem.value=[cbRem.value,`IA ${side.toUpperCase()} Efron — hyperémie bulbaire ${Number.isFinite(hyper)?hyper+'/4':'NE'}, limbique ${Number.isFinite(limb)?limb+'/4':'NE'}, lentille visible : ${data.lentille_visible||'non évalué'}, signes d’alerte : ${alertes||'pas de signe'}`].filter(Boolean).join('\n');}}
 
 
+
+const patientAnamLangData = {
+    fr:{name:'Français', chooseTitle:'Choisissez votre langue', chooseHelp:'Le questionnaire patient va s’afficher question par question.', yes:'Oui', no:'Non', question:'Question', back:'Retour', reset:'Réinitialiser', close:'Fermer', next:'Suivant', apply:'Reporter dans le formulaire', summaryTitle:'Résumé de vos réponses', none:'Aucune réponse renseignée.', ratingDefault:'Évaluez la gêne : 1 = légère, 4 = très gênante.', glassesRating:'Comment jugez-vous votre vision avec vos lunettes ? 1 = très mauvaise, 4 = très satisfaisante.'},
+    de:{name:'Deutsch', chooseTitle:'Wählen Sie Ihre Sprache', chooseHelp:'Der Patientenfragebogen wird Frage für Frage angezeigt.', yes:'Ja', no:'Nein', question:'Frage', back:'Zurück', reset:'Zurücksetzen', close:'Schließen', next:'Weiter', apply:'In das Formular übertragen', summaryTitle:'Zusammenfassung Ihrer Antworten', none:'Keine Antwort erfasst.', ratingDefault:'Bewerten Sie die Beschwerden: 1 = leicht, 4 = sehr stark.', glassesRating:'Wie beurteilen Sie Ihr Sehen mit Ihrer Brille? 1 = sehr schlecht, 4 = sehr zufriedenstellend.'},
+    it:{name:'Italiano', chooseTitle:'Scegli la lingua', chooseHelp:'Il questionario paziente sarà mostrato una domanda alla volta.', yes:'Sì', no:'No', question:'Domanda', back:'Indietro', reset:'Reimposta', close:'Chiudi', next:'Avanti', apply:'Riporta nel modulo', summaryTitle:'Riepilogo delle risposte', none:'Nessuna risposta inserita.', ratingDefault:'Valuti il disturbo: 1 = lieve, 4 = molto intenso.', glassesRating:'Come valuta la vista con gli occhiali? 1 = molto scarsa, 4 = molto soddisfacente.'},
+    rm:{name:'Rumantsch', chooseTitle:'Tscherna la lingua', chooseHelp:'Il questiunari dal pazient vegn mussà dumonda per dumonda.', yes:'Gea', no:'Na', question:'Dumonda', back:'Enavos', reset:'Resetar', close:'Serrar', next:'Enavant', apply:'Transferir en il formular', summaryTitle:'Resumaziun da las respostas', none:'Naginas respostas endatadas.', ratingDefault:'Valitai il disturbi: 1 = lev, 4 = fitg ferm.', glassesRating:'Co valitais Vossa vesida cun ils egliers? 1 = fitg nausch, 4 = fitg satisfaschenta.'},
+    en:{name:'English', chooseTitle:'Choose your language', chooseHelp:'The patient questionnaire will be shown one question at a time.', yes:'Yes', no:'No', question:'Question', back:'Back', reset:'Reset', close:'Close', next:'Next', apply:'Copy to form', summaryTitle:'Summary of your answers', none:'No answer entered.', ratingDefault:'Rate the symptom: 1 = mild, 4 = very severe.', glassesRating:'How do you rate your vision with your glasses? 1 = very poor, 4 = very satisfactory.'}
+};
+
+const patientAnamSections = {
+    'Correction actuelle':{de:'Aktuelle Korrektur',it:'Correzione attuale',rm:'Correctura actuala',en:'Current correction'},
+    'Symptômes':{de:'Symptome',it:'Sintomi',rm:'Sintoms',en:'Symptoms'},
+    'Antécédents oculaires personnels':{de:'Persönliche Augenanamnese',it:'Precedenti oculari personali',rm:'Antecedents oculars persunals',en:'Personal eye history'},
+    'Antécédents familiaux':{de:'Familienanamnese',it:'Precedenti familiari',rm:'Antecedents famigliars',en:'Family history'},
+    'Antécédents médicaux':{de:'Medizinische Vorgeschichte',it:'Precedenti medici',rm:'Antecedents medicinals',en:'Medical history'},
+    'Suivi ophtalmologique':{de:'Augenärztliche Kontrolle',it:'Controllo oftalmologico',rm:'Controlla oftalmologica',en:'Eye specialist follow-up'},
+    'Validation':{de:'Bestätigung',it:'Conferma',rm:'Confermaziun',en:'Confirmation'}
+};
+
 const patientAnamQuestions = [
-    {key:'lunettes', section:'Correction actuelle', label:'Port de lunettes', question:'Portez-vous actuellement des lunettes ?', type:'yesno', gradeOnYes:true, gradeLabel:'Qualité de vision avec vos lunettes : 1 = mauvaise, 4 = très satisfaisante'},
-    {key:'flou_l', section:'Symptômes', label:'Vision floue de loin', question:'Votre vision est-elle floue de loin ?', type:'yesno', gradeOnYes:true},
-    {key:'flou_p', section:'Symptômes', label:'Vision floue de près', question:'Votre vision est-elle floue de près ?', type:'yesno', gradeOnYes:true},
-    {key:'ceph', section:'Symptômes', label:'Céphalées', question:'Avez-vous des maux de tête ?', type:'yesno', gradeOnYes:true},
-    {key:'fatigue', section:'Symptômes', label:'Fatigue visuelle', question:'Ressentez-vous une fatigue visuelle ?', type:'yesno', gradeOnYes:true},
-    {key:'diplopie', section:'Symptômes', label:'Vision double', question:'Avez-vous parfois une vision double ?', type:'yesno', gradeOnYes:true},
-    {key:'photo', section:'Symptômes', label:'Sensibilité à la lumière', question:'Êtes-vous gêné par la lumière ?', type:'yesno', gradeOnYes:true},
-    {key:'larmoie', section:'Symptômes', label:'Larmoiement', question:'Vos yeux larmoient-ils ?', type:'yesno', gradeOnYes:true},
-    {key:'secheresse', section:'Symptômes', label:'Sensation de sécheresse', question:'Avez-vous une sensation de sécheresse oculaire ?', type:'yesno', gradeOnYes:true},
-    {key:'douleur', section:'Symptômes', label:'Douleur oculaire', question:'Avez-vous une douleur oculaire ?', type:'yesno', gradeOnYes:true},
-    {key:'rougeur', section:'Symptômes', label:'Rougeur oculaire', question:'Avez-vous remarqué une rougeur oculaire ?', type:'yesno', gradeOnYes:true},
-    {key:'corps_etranger', section:'Symptômes', label:'Sensation de corps étranger', question:'Avez-vous une sensation de grain de sable ou de corps étranger ?', type:'yesno', gradeOnYes:true},
-    {key:'lentilles', section:'Correction actuelle', label:'Porteur de lentilles', question:'Portez-vous des lentilles de contact ?', type:'yesno'},
-    {key:'cataracte_perso', section:'Antécédents oculaires personnels', label:'Cataracte personnelle', question:'Vous a-t-on déjà dit que vous aviez une cataracte ?', type:'yesno'},
-    {key:'glaucome_perso', section:'Antécédents oculaires personnels', label:'Glaucome personnel', question:'Vous a-t-on déjà dit que vous aviez un glaucome ?', type:'yesno'},
-    {key:'retine_perso', section:'Antécédents oculaires personnels', label:'Problème de rétine personnel', question:'Vous a-t-on déjà parlé d’un problème de rétine ?', type:'yesno'},
-    {key:'glaucome_famille', section:'Antécédents familiaux', label:'Glaucome dans la famille', question:'Y a-t-il du glaucome dans votre famille ?', type:'yesno'},
-    {key:'chirurgie', section:'Antécédents oculaires personnels', label:'Chirurgie ou traumatisme oculaire', question:'Avez-vous déjà eu une chirurgie ou un traumatisme oculaire ?', type:'yesno'},
-    {key:'diabete', section:'Antécédents médicaux', label:'Diabète', question:'Avez-vous un diabète connu ?', type:'yesno'},
-    {key:'hta', section:'Antécédents médicaux', label:'Hypertension artérielle', question:'Avez-vous une hypertension artérielle connue ?', type:'yesno'},
-    {key:'derniere_visite_ophtalmo', section:'Suivi ophtalmologique', label:'Dernière visite ophtalmologique', question:'Quand avez-vous vu un ophtalmologue pour la dernière fois ?', type:'choice', choices:[['moins_1_an','Moins d’un an'],['entre_1_3_ans','Entre 1 et 3 ans'],['plus_3_ans','Plus de 3 ans'],['jamais','Jamais']]},
-    {key:'summary', section:'Validation', label:'Résumé', question:'Résumé de vos réponses', type:'summary'}
+    {key:'lunettes', section:'Correction actuelle', label:'Port de lunettes', question:'Portez-vous actuellement des lunettes ?', type:'yesno', gradeOnYes:true, gradeLabel:'Comment jugez-vous votre vision avec vos lunettes ? 1 = très mauvaise, 4 = très satisfaisante.', i18n:{de:'Tragen Sie aktuell eine Brille?', it:'Porta attualmente gli occhiali?', rm:'Purtai Vus actualmain egliers?', en:'Do you currently wear glasses?'}, gradeI18n:{de:'Wie beurteilen Sie Ihr Sehen mit Ihrer Brille? 1 = sehr schlecht, 4 = sehr zufriedenstellend.', it:'Come valuta la vista con gli occhiali? 1 = molto scarsa, 4 = molto soddisfacente.', rm:'Co valitais Vossa vesida cun ils egliers? 1 = fitg nausch, 4 = fitg satisfaschenta.', en:'How do you rate your vision with your glasses? 1 = very poor, 4 = very satisfactory.'}},
+    {key:'flou_l', section:'Symptômes', label:'Vision floue de loin', question:'Votre vision est-elle floue de loin ?', type:'yesno', gradeOnYes:true, i18n:{de:'Ist Ihr Sehen in der Ferne verschwommen?', it:'La vista da lontano è sfocata?', rm:'È Vossa vesida en distanza nunclera?', en:'Is your distance vision blurry?'}},
+    {key:'flou_p', section:'Symptômes', label:'Vision floue de près', question:'Votre vision est-elle floue de près ?', type:'yesno', gradeOnYes:true, i18n:{de:'Ist Ihr Sehen in der Nähe verschwommen?', it:'La vista da vicino è sfocata?', rm:'È Vossa vesida da datiers nunclera?', en:'Is your near vision blurry?'}},
+    {key:'ceph', section:'Symptômes', label:'Céphalées', question:'Avez-vous des maux de tête ?', type:'yesno', gradeOnYes:true, i18n:{de:'Haben Sie Kopfschmerzen?', it:'Ha mal di testa?', rm:'Avais Vus mal il chau?', en:'Do you have headaches?'}},
+    {key:'fatigue', section:'Symptômes', label:'Fatigue visuelle', question:'Ressentez-vous une fatigue visuelle ?', type:'yesno', gradeOnYes:true, i18n:{de:'Spüren Sie visuelle Ermüdung?', it:'Avverte affaticamento visivo?', rm:'Sentis Vus stanchezza visuala?', en:'Do you feel eye strain?'}},
+    {key:'diplopie', section:'Symptômes', label:'Vision double', question:'Avez-vous parfois une vision double ?', type:'yesno', gradeOnYes:true, i18n:{de:'Sehen Sie manchmal doppelt?', it:'Ha talvolta visione doppia?', rm:'Vesais Vus mintgatant dubel?', en:'Do you sometimes see double?'}},
+    {key:'photo', section:'Symptômes', label:'Sensibilité à la lumière', question:'Êtes-vous gêné par la lumière ?', type:'yesno', gradeOnYes:true, i18n:{de:'Stört Sie Licht?', it:'La luce le dà fastidio?', rm:'As disturba la glisch?', en:'Are you bothered by light?'}},
+    {key:'larmoie', section:'Symptômes', label:'Larmoiement', question:'Vos yeux larmoient-ils ?', type:'yesno', gradeOnYes:true, i18n:{de:'Tränen Ihre Augen?', it:'Ha lacrimazione agli occhi?', rm:'Larmesan Voss egls?', en:'Do your eyes water?'}},
+    {key:'secheresse', section:'Symptômes', label:'Sensation de sécheresse', question:'Avez-vous une sensation de sécheresse oculaire ?', type:'yesno', gradeOnYes:true, i18n:{de:'Haben Sie ein Trockenheitsgefühl der Augen?', it:'Ha una sensazione di secchezza oculare?', rm:'Avais Vus in sentiment da setgira dals egls?', en:'Do your eyes feel dry?'}},
+    {key:'douleur', section:'Symptômes', label:'Douleur oculaire', question:'Avez-vous une douleur oculaire ?', type:'yesno', gradeOnYes:true, i18n:{de:'Haben Sie Augenschmerzen?', it:'Ha dolore agli occhi?', rm:'Avais Vus mal ils egls?', en:'Do you have eye pain?'}},
+    {key:'rougeur', section:'Symptômes', label:'Rougeur oculaire', question:'Avez-vous remarqué une rougeur oculaire ?', type:'yesno', gradeOnYes:true, i18n:{de:'Haben Sie eine Augenrötung bemerkt?', it:'Ha notato arrossamento degli occhi?', rm:'Avais Vus remartgà cotschnadad dals egls?', en:'Have you noticed eye redness?'}},
+    {key:'corps_etranger', section:'Symptômes', label:'Sensation de corps étranger', question:'Avez-vous une sensation de grain de sable ou de corps étranger ?', type:'yesno', gradeOnYes:true, i18n:{de:'Haben Sie ein Sandkorn- oder Fremdkörpergefühl?', it:'Ha sensazione di sabbia o corpo estraneo?', rm:'Avais Vus in sentiment da sablun u corp ester?', en:'Do you feel grit or a foreign body sensation?'}},
+    {key:'lentilles', section:'Correction actuelle', label:'Porteur de lentilles', question:'Portez-vous des lentilles de contact ?', type:'yesno', i18n:{de:'Tragen Sie Kontaktlinsen?', it:'Porta lenti a contatto?', rm:'Purtai Vus lentillas da contact?', en:'Do you wear contact lenses?'}},
+    {key:'cataracte_perso', section:'Antécédents oculaires personnels', label:'Cataracte personnelle', question:'Vous a-t-on déjà dit que vous aviez une cataracte ?', type:'yesno', i18n:{de:'Wurde Ihnen schon gesagt, dass Sie einen Grauen Star haben?', it:'Le è mai stato detto che ha una cataratta?', rm:'Han ins gia ditg a Vus che Vus hajas cataracta?', en:'Have you ever been told you have cataracts?'}},
+    {key:'glaucome_perso', section:'Antécédents oculaires personnels', label:'Glaucome personnel', question:'Vous a-t-on déjà dit que vous aviez un glaucome ?', type:'yesno', i18n:{de:'Wurde Ihnen schon gesagt, dass Sie ein Glaukom haben?', it:'Le è mai stato detto che ha un glaucoma?', rm:'Han ins gia ditg a Vus che Vus hajas glaucoma?', en:'Have you ever been told you have glaucoma?'}},
+    {key:'retine_perso', section:'Antécédents oculaires personnels', label:'Problème de rétine personnel', question:'Vous a-t-on déjà parlé d’un problème de rétine ?', type:'yesno', i18n:{de:'Wurde bei Ihnen schon ein Netzhautproblem erwähnt?', it:'Le è mai stato parlato di un problema alla retina?', rm:'Han ins gia discurrì cun Vus d’in problem da la retina?', en:'Have you ever been told about a retina problem?'}},
+    {key:'glaucome_famille', section:'Antécédents familiaux', label:'Glaucome dans la famille', question:'Y a-t-il du glaucome dans votre famille ?', type:'yesno', i18n:{de:'Gibt es Glaukom in Ihrer Familie?', it:'Ci sono casi di glaucoma nella sua famiglia?', rm:'Datti glaucoma en Vossa famiglia?', en:'Is there glaucoma in your family?'}},
+    {key:'chirurgie', section:'Antécédents oculaires personnels', label:'Chirurgie ou traumatisme oculaire', question:'Avez-vous déjà eu une chirurgie ou un traumatisme oculaire ?', type:'yesno', i18n:{de:'Hatten Sie schon eine Augenoperation oder Augenverletzung?', it:'Ha avuto un intervento o trauma oculare?', rm:'Avais Vus gì ina operaziun u in trauma ocular?', en:'Have you had eye surgery or eye trauma?'}},
+    {key:'diabete', section:'Antécédents médicaux', label:'Diabète', question:'Avez-vous un diabète connu ?', type:'yesno', i18n:{de:'Haben Sie bekannten Diabetes?', it:'Ha il diabete?', rm:'Avais Vus diabetes enconuschent?', en:'Do you have diabetes?'}},
+    {key:'hta', section:'Antécédents médicaux', label:'Hypertension artérielle', question:'Avez-vous une hypertension artérielle connue ?', type:'yesno', i18n:{de:'Haben Sie bekannten Bluthochdruck?', it:'Ha ipertensione arteriosa?', rm:'Avais Vus pressiun auta dal sang?', en:'Do you have high blood pressure?'}},
+    {key:'derniere_visite_ophtalmo', section:'Suivi ophtalmologique', label:'Dernière visite ophtalmologique', question:'Quand avez-vous vu un ophtalmologue pour la dernière fois ?', type:'choice', choices:[['moins_1_an','Moins d’un an'],['entre_1_3_ans','Entre 1 et 3 ans'],['plus_3_ans','Plus de 3 ans'],['jamais','Jamais']], i18n:{de:'Wann waren Sie zuletzt beim Augenarzt?', it:'Quando ha visto l’oculista l’ultima volta?', rm:'Cura avais Vus vis l’oftalmolog per l’ultima giada?', en:'When did you last see an ophthalmologist?'}, choiceI18n:{de:{moins_1_an:'Vor weniger als 1 Jahr',entre_1_3_ans:'Vor 1 bis 3 Jahren',plus_3_ans:'Vor mehr als 3 Jahren',jamais:'Nie'},it:{moins_1_an:'Meno di 1 anno fa',entre_1_3_ans:'Tra 1 e 3 anni fa',plus_3_ans:'Più di 3 anni fa',jamais:'Mai'},rm:{moins_1_an:'Avant main che 1 onn',entre_1_3_ans:'Avant 1 fin 3 onns',plus_3_ans:'Avant dapli che 3 onns',jamais:'Mai'},en:{moins_1_an:'Less than 1 year ago',entre_1_3_ans:'Between 1 and 3 years ago',plus_3_ans:'More than 3 years ago',jamais:'Never'}}},
+    {key:'summary', section:'Validation', label:'Résumé', question:'Résumé de vos réponses', type:'summary', i18n:{de:'Zusammenfassung Ihrer Antworten',it:'Riepilogo delle risposte',rm:'Resumaziun da las respostas',en:'Summary of your answers'}}
 ];
 
-const patientAnamState = { index:0, answers:{} };
+const patientAnamState = { index:0, answers:{}, lang:null };
+function patientAnamLang(){return patientAnamLangData[patientAnamState.lang||'fr']||patientAnamLangData.fr;}
+function patientAnamSectionText(section){const lang=patientAnamState.lang||'fr';return lang==='fr'?section:((patientAnamSections[section]&&patientAnamSections[section][lang])||section);}
+function patientAnamQuestionText(q){const lang=patientAnamState.lang||'fr';return lang==='fr'?q.question:((q.i18n&&q.i18n[lang])||q.question);}
+function patientAnamGradeText(q){const lang=patientAnamState.lang||'fr';return lang==='fr'?(q.gradeLabel||patientAnamLang().ratingDefault):((q.gradeI18n&&q.gradeI18n[lang])||q.gradeLabel||patientAnamLang().ratingDefault);}
+function patientAnamChoiceDisplay(q,value,frLabel){const lang=patientAnamState.lang||'fr';return lang==='fr'?frLabel:((q.choiceI18n&&q.choiceI18n[lang]&&q.choiceI18n[lang][value])||frLabel);}
 
 function patientAnamOpen(){
     const modal=em('patientAnamModal');
@@ -1449,6 +1473,7 @@ function patientAnamOpen(){
     modal.classList.add('active');
     modal.setAttribute('aria-hidden','false');
     patientAnamState.index=0;
+    patientAnamState.lang=null;
     patientAnamRender();
 }
 
@@ -1462,6 +1487,13 @@ function patientAnamClose(){
 function patientAnamReset(){
     patientAnamState.index=0;
     patientAnamState.answers={};
+    patientAnamState.lang=null;
+    patientAnamRender();
+}
+
+function patientAnamSelectLang(lang){
+    patientAnamState.lang=lang;
+    patientAnamState.index=0;
     patientAnamRender();
 }
 
@@ -1489,24 +1521,52 @@ function patientAnamSetText(key,value){
 }
 
 function patientAnamPrev(){
+    if(!patientAnamState.lang){return;}
     if(patientAnamState.index>0){patientAnamState.index--;patientAnamRender();}
+    else{patientAnamState.lang=null;patientAnamRender();}
 }
 
 function patientAnamNext(){
+    if(!patientAnamState.lang){return;}
     if(patientAnamState.index<patientAnamQuestions.length-1){patientAnamState.index++;patientAnamRender();}
 }
 
+function patientAnamRenderLanguage(){
+    const l=patientAnamLangData.fr;
+    const txt=em('patientAnamProgressText'); if(txt)txt.textContent='Langue / Sprache / Lingua / Language';
+    const fill=em('patientAnamProgressFill'); if(fill)fill.style.width='0%';
+    const kicker=em('patientAnamKicker'); if(kicker)kicker.textContent='Auto-anamnèse';
+    const question=em('patientAnamQuestion'); if(question)question.textContent=l.chooseTitle;
+    const help=em('patientAnamHelp'); if(help)help.textContent=l.chooseHelp;
+    const answers=em('patientAnamAnswers'); if(answers)answers.innerHTML='';
+    const rating=em('patientAnamRating'); if(rating){rating.innerHTML='';rating.classList.remove('active');}
+    const free=em('patientAnamFreeInput'); if(free){free.innerHTML='';free.style.display='none';}
+    const summary=em('patientAnamSummary'); if(summary){summary.innerHTML='';summary.classList.remove('active');}
+    Object.entries(patientAnamLangData).forEach(([code,data])=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='patient-big-choice';
+        b.textContent=data.name;
+        b.onclick=()=>patientAnamSelectLang(code);
+        answers.appendChild(b);
+    });
+    const next=em('patientAnamNextBtn'); if(next)next.style.display='none';
+    const apply=em('patientAnamApplyBtn'); if(apply)apply.style.display='none';
+}
+
 function patientAnamRender(){
+    if(!patientAnamState.lang){patientAnamRenderLanguage();return;}
     const q=patientAnamCurrent();
     if(!q)return;
+    const ui=patientAnamLang();
     const ans=patientAnamState.answers[q.key]||{};
     const total=patientAnamQuestions.length;
     const step=patientAnamState.index+1;
     const pct=Math.round((step/total)*100);
-    const txt=em('patientAnamProgressText'); if(txt)txt.textContent=`Question ${step}/${total}`;
+    const txt=em('patientAnamProgressText'); if(txt)txt.textContent=`${ui.question} ${step}/${total}`;
     const fill=em('patientAnamProgressFill'); if(fill)fill.style.width=pct+'%';
-    const kicker=em('patientAnamKicker'); if(kicker)kicker.textContent=q.section||'Question';
-    const question=em('patientAnamQuestion'); if(question)question.textContent=q.question;
+    const kicker=em('patientAnamKicker'); if(kicker)kicker.textContent=patientAnamSectionText(q.section||ui.question);
+    const question=em('patientAnamQuestion'); if(question)question.textContent=patientAnamQuestionText(q);
     const help=em('patientAnamHelp'); if(help)help.textContent=q.help||'';
     const answers=em('patientAnamAnswers');
     const rating=em('patientAnamRating');
@@ -1518,11 +1578,14 @@ function patientAnamRender(){
     if(rating){rating.innerHTML='';rating.classList.remove('active');}
     if(free){free.innerHTML='';free.style.display='none';}
     if(summary){summary.innerHTML='';summary.classList.remove('active');}
-    if(next)next.style.display=q.type==='summary'?'none':'inline-block';
-    if(apply)apply.style.display=q.type==='summary'?'inline-block':'none';
+    if(next){next.textContent=ui.next;next.style.display=q.type==='summary'?'none':'inline-block';}
+    const backBtn=document.querySelector('.patient-anam-actions-left button:nth-child(1)'); if(backBtn)backBtn.textContent=ui.back;
+    const resetBtn=document.querySelector('.patient-anam-actions-left button:nth-child(2)'); if(resetBtn)resetBtn.textContent=ui.reset;
+    const closeBtn=document.querySelector('.patient-anam-actions-right button:nth-child(1)'); if(closeBtn)closeBtn.textContent=ui.close;
+    if(apply){apply.textContent=ui.apply;apply.style.display=q.type==='summary'?'inline-block':'none';}
 
     if(q.type==='yesno'){
-        [['oui','Oui'],['non','Non']].forEach(([v,label])=>{
+        [['oui',ui.yes],['non',ui.no]].forEach(([v,label])=>{
             const b=document.createElement('button');
             b.type='button';
             b.className='patient-big-choice'+(ans.value===v?' active':'');
@@ -1531,7 +1594,7 @@ function patientAnamRender(){
             answers.appendChild(b);
         });
         if(q.gradeOnYes && ans.value==='oui'){
-            if(help)help.textContent=q.gradeLabel||'Évaluez la gêne : 1 = légère, 4 = très gênante.';
+            if(help)help.textContent=patientAnamGradeText(q);
             rating.classList.add('active');
             [1,2,3,4].forEach(n=>{
                 const b=document.createElement('button');
@@ -1548,7 +1611,7 @@ function patientAnamRender(){
             const b=document.createElement('button');
             b.type='button';
             b.className='patient-big-choice'+(ans.value===v?' active':'');
-            b.textContent=label;
+            b.textContent=patientAnamChoiceDisplay(q,v,label);
             b.onclick=()=>patientAnamSetAnswer(q.key,v);
             answers.appendChild(b);
         });
@@ -1585,10 +1648,11 @@ function patientAnamBuildSummaryHtml(){
         const a=patientAnamState.answers[q.key];
         const label=patientAnamAnswerLabel(q,a);
         if(!label)return;
-        groups[q.section]=groups[q.section]||[];
-        groups[q.section].push(`<li><strong>${q.label} :</strong> ${label}</li>`);
+        const section=patientAnamSectionText(q.section);
+        groups[section]=groups[section]||[];
+        groups[section].push(`<li><strong>${patientAnamQuestionText(q)} :</strong> ${label}</li>`);
     });
-    return Object.entries(groups).map(([section,items])=>`<h4>${section}</h4><ul>${items.join('')}</ul>`).join('')||'<p>Aucune réponse renseignée.</p>';
+    return Object.entries(groups).map(([section,items])=>`<h4>${section}</h4><ul>${items.join('')}</ul>`).join('')||`<p>${patientAnamLang().none}</p>`;
 }
 
 function patientAnamCollect(){
@@ -1669,7 +1733,6 @@ function patientAnamApply(){
     saveFormState();
     patientAnamClose();
 }
-
 
 document.addEventListener('DOMContentLoaded',()=>{try{initAutoSave();}catch(e){console.error(e);}try{eyeMeasureInit();}catch(e){console.error(e);alert('Erreur initialisation photo : '+e.message);}});
 
