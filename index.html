@@ -215,6 +215,7 @@ button{
 .patient-anam-card p{margin:4px 0 12px;font-size:13px;color:#444;}
 .patient-anam-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .patient-question{border:1px solid #ddd;border-radius:8px;padding:10px;background:#fafafa;}
+.patient-question.patient-wide{grid-column:1/-1;background:#fffdf5;}
 .patient-question .q-title{font-weight:bold;margin-bottom:8px;}
 .patient-choice{display:flex;gap:8px;flex-wrap:wrap;}
 .patient-choice button{padding:8px 14px;background:#eee;color:#222;border:1px solid #ccc;}
@@ -321,9 +322,10 @@ button{
     <div id="patientAnamModal" class="patient-anam-modal" aria-hidden="true">
         <div class="patient-anam-card">
             <h2>Auto-anamnèse patient</h2>
-            <p>Le patient répond par oui/non. Si une réponse est positive, il peut grader la gêne de 1 à 4 étoiles. Les réponses sont ensuite copiées dans le formulaire principal. Ce questionnaire ne remplace pas l’entretien clinique.</p>
+            <p>Le patient répond par oui/non. Pour les symptômes, une réponse positive peut être gradée de 1 à 4 étoiles. Les pathologies et antécédents restent en oui/non simple. Les réponses sont ensuite copiées dans le formulaire principal. Ce questionnaire ne remplace pas l’entretien clinique.</p>
 
             <div class="patient-anam-grid">
+                <div class="patient-question patient-wide" data-q="ancienne_correction" data-label="Port de l’ancienne correction" data-gradeable="no"><div class="q-title">Portez-vous votre ancienne correction actuellement ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
                 <div class="patient-question" data-q="flou_l" data-label="Vision floue de loin"><div class="q-title">Vision floue de loin ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
                 <div class="patient-question" data-q="flou_p" data-label="Vision floue de près"><div class="q-title">Vision floue de près ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
                 <div class="patient-question" data-q="ceph" data-label="Céphalées"><div class="q-title">Maux de tête ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
@@ -335,11 +337,12 @@ button{
                 <div class="patient-question" data-q="douleur" data-label="Douleur oculaire"><div class="q-title">Douleur oculaire ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
                 <div class="patient-question" data-q="rougeur" data-label="Rougeur oculaire"><div class="q-title">Rougeur oculaire ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
                 <div class="patient-question" data-q="corps_etranger" data-label="Sensation de corps étranger"><div class="q-title">Sensation de corps étranger ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="lentilles" data-label="Porteur de lentilles"><div class="q-title">Portez-vous des lentilles ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="diabete" data-label="Diabète"><div class="q-title">Diabète connu ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="hta" data-label="Hypertension artérielle"><div class="q-title">Hypertension artérielle connue ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="glaucome" data-label="Antécédent familial de glaucome"><div class="q-title">Glaucome dans la famille ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="chirurgie" data-label="Chirurgie ou traumatisme oculaire"><div class="q-title">Chirurgie ou traumatisme oculaire ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
+                <div class="patient-question" data-q="lentilles" data-gradeable="no" data-label="Porteur de lentilles"><div class="q-title">Portez-vous des lentilles ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
+                <div class="patient-question" data-q="diabete" data-gradeable="no" data-label="Diabète"><div class="q-title">Diabète connu ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
+                <div class="patient-question" data-q="hta" data-gradeable="no" data-label="Hypertension artérielle"><div class="q-title">Hypertension artérielle connue ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
+                <div class="patient-question" data-q="glaucome" data-gradeable="no" data-label="Antécédent familial de glaucome"><div class="q-title">Glaucome dans la famille ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
+                <div class="patient-question" data-q="chirurgie" data-gradeable="no" data-label="Chirurgie ou traumatisme oculaire"><div class="q-title">Chirurgie ou traumatisme oculaire ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
+                <div class="patient-question patient-wide" data-q="derniere_visite_ophtalmo" data-label="Dernière visite ophtalmologique" data-gradeable="no"><div class="q-title">Dernière visite chez l’ophtalmologue ?</div><div class="patient-choice"><button type="button" data-v="moins_3_ans">Moins de 3 ans</button><button type="button" data-v="plus_3_ans">Plus de 3 ans</button></div></div>
             </div>
 
             <div class="patient-extra">
@@ -1524,7 +1527,8 @@ function patientAnamAnswer(button){
     q.setAttribute('data-answer',value);
     q.querySelectorAll('.patient-choice button').forEach(b=>b.classList.remove('active'));
     button.classList.add('active');
-    if(value==='oui') patientAnamEnsureRating(q);
+    const gradeable=q.getAttribute('data-gradeable')!=='no';
+    if(value==='oui' && gradeable) patientAnamEnsureRating(q);
     else patientAnamHideRating(q);
 }
 
@@ -1557,7 +1561,9 @@ function patientAnamLabelWithGrade(answer){
 function patientAnamApply(){
     const answers=patientAnamCollect();
     const isYes=k=>answers[k]&&answers[k].value==='oui';
-    const yesLabels=Object.values(answers).filter(a=>a.value==='oui').map(a=>a.grade ? `${a.label} (${a.grade}/4)` : a.label);
+    const answerValue=k=>answers[k]?answers[k].value:'';
+    const isClinicalSymptom=a=>a && a.value==='oui' && a.grade;
+    const yesLabels=Object.values(answers).filter(a=>a.value==='oui').map(a=>isClinicalSymptom(a) ? `${a.label} (${a.grade}/4)` : a.label);
     const noLabels=Object.values(answers).filter(a=>a.value==='non').map(a=>a.label);
     const motifTxt=(em('patientAnamMotif')?.value||'').trim();
     const notesTxt=(em('patientAnamNotes')?.value||'').trim();
@@ -1571,6 +1577,8 @@ function patientAnamApply(){
 
     const motifLines=[];
     if(motifTxt)motifLines.push(motifTxt);
+    if(answerValue('ancienne_correction'))motifLines.push('Port de l’ancienne correction : '+(isYes('ancienne_correction')?'oui':'non')+'.');
+    if(answerValue('derniere_visite_ophtalmo'))motifLines.push('Dernière visite ophtalmologique : '+(answerValue('derniere_visite_ophtalmo')==='moins_3_ans'?'moins de 3 ans':'plus de 3 ans')+'.');
     if(yesLabels.length)motifLines.push('Auto-anamnèse patient — réponses positives : '+yesLabels.join(', ')+'.');
     if(noLabels.length)motifLines.push('Réponses négatives : '+noLabels.join(', ')+'.');
     if(notesTxt)motifLines.push('Commentaire patient : '+notesTxt);
@@ -1592,6 +1600,7 @@ function patientAnamApply(){
     const antOcu=[];
     if(isYes('glaucome'))antOcu.push('Antécédent familial de glaucome déclaré');
     if(isYes('chirurgie'))antOcu.push('Chirurgie/traumatisme oculaire déclaré');
+    if(answerValue('derniere_visite_ophtalmo'))antOcu.push('Dernière visite ophtalmologique : '+(answerValue('derniere_visite_ophtalmo')==='moins_3_ans'?'moins de 3 ans':'plus de 3 ans'));
     if(antOcu.length)appendUniqueLineToTextarea('ant_ocu','Auto-anamnèse : '+antOcu.join(', ')+'.');
 
     saveFormState();
