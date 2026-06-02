@@ -1437,8 +1437,6 @@ const patientAnamQuestions = [
     {key:'chirurgie', section:'Antécédents oculaires personnels', label:'Chirurgie ou traumatisme oculaire', question:'Avez-vous déjà eu une chirurgie ou un traumatisme oculaire ?', type:'yesno'},
     {key:'diabete', section:'Antécédents médicaux', label:'Diabète', question:'Avez-vous un diabète connu ?', type:'yesno'},
     {key:'hta', section:'Antécédents médicaux', label:'Hypertension artérielle', question:'Avez-vous une hypertension artérielle connue ?', type:'yesno'},
-    {key:'motif_libre', section:'Motif', label:'Motif principal', question:'Quel est le motif principal de votre visite ?', type:'text', placeholder:'Ex. contrôle, renouvellement, gêne en vision de près…'},
-    {key:'notes_libres', section:'Commentaires', label:'Commentaires libres du patient', question:'Souhaitez-vous ajouter une précision ?', type:'text', placeholder:'Durée, contexte, fréquence, déclencheurs, traitements…'},
     {key:'derniere_visite_ophtalmo', section:'Suivi ophtalmologique', label:'Dernière visite ophtalmologique', question:'Quand avez-vous vu un ophtalmologue pour la dernière fois ?', type:'choice', choices:[['moins_1_an','Moins d’un an'],['entre_1_3_ans','Entre 1 et 3 ans'],['plus_3_ans','Plus de 3 ans'],['jamais','Jamais']]},
     {key:'summary', section:'Validation', label:'Résumé', question:'Résumé de vos réponses', type:'summary'}
 ];
@@ -1631,8 +1629,6 @@ function patientAnamApply(){
     const answerValue=k=>answers[k]?answers[k].value:'';
     const yesLabels=Object.values(answers).filter(a=>a.value==='oui').map(a=>a.grade ? `${a.label} (${a.grade}/4)` : a.label);
     const noLabels=Object.values(answers).filter(a=>a.value==='non').map(a=>a.label);
-    const motifTxt=(answers.motif_libre?.value||'').trim();
-    const notesTxt=(answers.notes_libres?.value||'').trim();
 
     if(em('sym_flou'))em('sym_flou').checked=isYes('flou_l')||isYes('flou_p');
     if(em('sym_ceph'))em('sym_ceph').checked=isYes('ceph');
@@ -1642,12 +1638,10 @@ function patientAnamApply(){
     if(em('sym_larmoie'))em('sym_larmoie').checked=isYes('larmoie');
 
     const motifLines=[];
-    if(motifTxt)motifLines.push(motifTxt);
     if(answerValue('lunettes'))motifLines.push('Porte actuellement des lunettes : '+(isYes('lunettes')?'oui'+(answers.lunettes.grade?' — qualité estimée '+answers.lunettes.grade+'/4':''):'non')+'.');
     if(answerValue('derniere_visite_ophtalmo'))motifLines.push('Dernière visite ophtalmologique : '+patientAnamChoiceText(answers.derniere_visite_ophtalmo)+'.');
     if(yesLabels.length)motifLines.push('Auto-anamnèse patient — réponses positives : '+yesLabels.join(', ')+'.');
     if(noLabels.length)motifLines.push('Réponses négatives : '+noLabels.join(', ')+'.');
-    if(notesTxt)motifLines.push('Commentaire patient : '+notesTxt);
     const motif=em('anam_motif');
     if(motif){
         const block=motifLines.join('\n');
