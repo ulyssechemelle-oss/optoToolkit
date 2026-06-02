@@ -191,51 +191,91 @@ button{
 .ai-diagnostic-box textarea{min-height:140px;font-family:Arial,sans-serif;font-size:13px;}
 .ai-warn{margin-top:6px;color:#7a4b00;font-size:12px;line-height:1.35;}
 
-/* Auto-anamnèse patient */
+/* Auto-anamnèse patient — mode applet plein écran */
 .patient-anam-modal{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,.55);
-    z-index:9999;
     display:none;
-    align-items:flex-start;
+    align-items:stretch;
     justify-content:center;
-    padding:18px;
-    overflow:auto;
+    background:linear-gradient(135deg,#f7f7f7,#ffffff);
+    z-index:9999;
 }
 .patient-anam-modal.active{display:flex;}
 .patient-anam-card{
-    width:min(920px,100%);
+    width:100%;
+    max-width:760px;
+    min-height:100vh;
     background:#fff;
-    border-radius:12px;
-    box-shadow:0 8px 30px rgba(0,0,0,.25);
-    padding:16px;
+    box-shadow:0 0 30px rgba(0,0,0,.18);
+    padding:18px;
+    box-sizing:border-box;
+    display:flex;
+    flex-direction:column;
 }
-.patient-anam-card h2{margin:0 0 6px;color:#d40511;font-size:20px;}
-.patient-anam-card p{margin:4px 0 12px;font-size:13px;color:#444;}
-.patient-anam-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.patient-question{border:1px solid #ddd;border-radius:8px;padding:10px;background:#fafafa;}
-.patient-question.patient-wide{grid-column:1/-1;background:#fffdf5;}
-.patient-question .q-title{font-weight:bold;margin-bottom:8px;}
-.patient-choice{display:flex;gap:8px;flex-wrap:wrap;}
-.patient-choice button{padding:8px 14px;background:#eee;color:#222;border:1px solid #ccc;}
-.patient-choice button.active{background:#d40511;color:#fff;border-color:#d40511;}
-.patient-rating{display:none;margin-top:10px;padding-top:8px;border-top:1px dashed #ccc;}
-.patient-rating.active{display:block;}
-.patient-rating-label{font-size:12px;color:#555;margin-bottom:5px;}
-.patient-rating-stars{display:flex;gap:6px;flex-wrap:wrap;}
-.patient-rating-stars button{font-size:22px;line-height:1;padding:4px 6px;background:#eee;color:#777;border:1px solid #ccc;border-radius:6px;}
-.patient-rating-stars button.active{background:#d40511;color:#fff;border-color:#d40511;}
-.patient-extra{margin-top:12px;}
-.patient-anam-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;justify-content:flex-end;}
-@media (max-width:800px){.patient-anam-grid{grid-template-columns:1fr}.patient-anam-card{padding:12px}}
-
-@media (max-width:900px){.photo-measure-grid{grid-template-columns:1fr;}}
-.eye-action-panel{margin-top:10px;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fafafa;}
-.eye-action-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0;}
-.eye-action-row .measure-status{flex:1 1 260px;margin-top:0;}
-.eye-action-panel textarea{margin-top:8px;}
-
+.patient-anam-topbar{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:center;
+    margin-bottom:14px;
+}
+.patient-anam-title{font-size:18px;font-weight:bold;color:#d40511;}
+.patient-anam-progress{font-size:13px;color:#555;text-align:right;}
+.patient-progress-track{height:8px;background:#eee;border-radius:999px;overflow:hidden;margin-bottom:18px;}
+.patient-progress-fill{height:100%;width:0;background:#d40511;border-radius:999px;transition:.25s ease;}
+.patient-screen{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:18px;
+    text-align:center;
+}
+.patient-screen-kicker{font-size:14px;color:#777;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;}
+.patient-screen-question{font-size:30px;line-height:1.18;font-weight:bold;color:#222;margin:0 auto;max-width:680px;}
+.patient-screen-help{font-size:15px;color:#555;line-height:1.4;max-width:560px;margin:0 auto;}
+.patient-answer-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:4px;}
+.patient-big-choice{
+    min-width:150px;
+    min-height:64px;
+    padding:16px 22px;
+    border-radius:16px;
+    border:2px solid #d0d0d0;
+    background:#f7f7f7;
+    color:#222;
+    font-size:22px;
+    font-weight:bold;
+}
+.patient-big-choice:hover,.patient-big-choice.active{background:#d40511;color:#fff;border-color:#d40511;}
+.patient-rating-row{display:none;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:8px;}
+.patient-rating-row.active{display:flex;}
+.patient-star-choice{
+    min-width:76px;
+    min-height:58px;
+    padding:8px 10px;
+    border-radius:14px;
+    border:2px solid #d0d0d0;
+    background:#fff;
+    color:#777;
+    font-size:22px;
+    font-weight:bold;
+}
+.patient-star-choice:hover,.patient-star-choice.active{background:#d40511;color:#fff;border-color:#d40511;}
+.patient-free-input{width:100%;max-width:620px;margin:0 auto;text-align:left;}
+.patient-free-input textarea{min-height:110px;font-size:18px;border-radius:12px;padding:12px;}
+.patient-anam-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;justify-content:space-between;align-items:center;}
+.patient-anam-actions-left,.patient-anam-actions-right{display:flex;gap:10px;flex-wrap:wrap;}
+.patient-summary-box{display:none;text-align:left;background:#fafafa;border:1px solid #ddd;border-radius:12px;padding:14px;max-height:45vh;overflow:auto;font-size:14px;line-height:1.45;}
+.patient-summary-box.active{display:block;}
+@media (max-width:700px){
+    .patient-anam-card{padding:14px;}
+    .patient-screen-question{font-size:24px;}
+    .patient-big-choice{width:100%;font-size:20px;}
+    .patient-star-choice{min-width:64px;font-size:18px;}
+    .patient-anam-actions{justify-content:center;}
+    .patient-anam-actions-left,.patient-anam-actions-right{justify-content:center;width:100%;}
+}
 
 #printContainer{
     display:none;
@@ -321,120 +361,35 @@ button{
 
     <div id="patientAnamModal" class="patient-anam-modal" aria-hidden="true">
         <div class="patient-anam-card">
-            <h2>Auto-anamnèse patient</h2>
-            <p>Le patient répond par oui/non. Pour les symptômes, une réponse positive peut être gradée de 1 à 4 étoiles. Les pathologies et antécédents restent en oui/non simple. Les réponses sont ensuite copiées dans le formulaire principal. Ce questionnaire ne remplace pas l’entretien clinique.</p>
-
-            <div class="patient-anam-grid">
-                <div class="patient-question patient-wide" data-q="ancienne_correction" data-label="Port de l’ancienne correction" data-gradeable="no"><div class="q-title">Portez-vous votre ancienne correction actuellement ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="flou_l" data-label="Vision floue de loin"><div class="q-title">Vision floue de loin ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="flou_p" data-label="Vision floue de près"><div class="q-title">Vision floue de près ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="ceph" data-label="Céphalées"><div class="q-title">Maux de tête ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="fatigue" data-label="Fatigue visuelle"><div class="q-title">Fatigue visuelle ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="diplopie" data-label="Vision double"><div class="q-title">Vision double ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="photo" data-label="Sensibilité à la lumière"><div class="q-title">Sensibilité à la lumière ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="larmoie" data-label="Larmoiement"><div class="q-title">Larmoiement ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="secheresse" data-label="Sensation de sécheresse"><div class="q-title">Sensation de sécheresse ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="douleur" data-label="Douleur oculaire"><div class="q-title">Douleur oculaire ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="rougeur" data-label="Rougeur oculaire"><div class="q-title">Rougeur oculaire ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="corps_etranger" data-label="Sensation de corps étranger"><div class="q-title">Sensation de corps étranger ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="lentilles" data-gradeable="no" data-label="Porteur de lentilles"><div class="q-title">Portez-vous des lentilles ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="diabete" data-gradeable="no" data-label="Diabète"><div class="q-title">Diabète connu ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="hta" data-gradeable="no" data-label="Hypertension artérielle"><div class="q-title">Hypertension artérielle connue ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="glaucome" data-gradeable="no" data-label="Antécédent familial de glaucome"><div class="q-title">Glaucome dans la famille ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question" data-q="chirurgie" data-gradeable="no" data-label="Chirurgie ou traumatisme oculaire"><div class="q-title">Chirurgie ou traumatisme oculaire ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
-                <div class="patient-question patient-wide" data-q="derniere_visite_ophtalmo" data-label="Dernière visite ophtalmologique" data-gradeable="no"><div class="q-title">Dernière visite chez l’ophtalmologue ?</div><div class="patient-choice"><button type="button" data-v="moins_3_ans">Moins de 3 ans</button><button type="button" data-v="plus_3_ans">Plus de 3 ans</button></div></div>
+            <div class="patient-anam-topbar">
+                <div class="patient-anam-title">Auto-anamnèse patient</div>
+                <div id="patientAnamProgressText" class="patient-anam-progress">Question 1/1</div>
             </div>
+            <div class="patient-progress-track"><div id="patientAnamProgressFill" class="patient-progress-fill"></div></div>
 
-            <div class="patient-extra">
-                <label>Motif principal exprimé par le patient</label>
-                <textarea id="patientAnamMotif" style="height:60px;" placeholder="Ex. contrôle, renouvellement, gêne en vision de près..."></textarea>
-                <label>Commentaires libres du patient</label>
-                <textarea id="patientAnamNotes" style="height:70px;" placeholder="Durée, contexte, fréquence, déclencheurs, traitements..."></textarea>
+            <div id="patientAnamQuestionScreen" class="patient-screen">
+                <div id="patientAnamKicker" class="patient-screen-kicker">Question</div>
+                <div id="patientAnamQuestion" class="patient-screen-question">Chargement…</div>
+                <div id="patientAnamHelp" class="patient-screen-help"></div>
+                <div id="patientAnamAnswers" class="patient-answer-row"></div>
+                <div id="patientAnamRating" class="patient-rating-row"></div>
+                <div id="patientAnamFreeInput" class="patient-free-input" style="display:none;"></div>
+                <div id="patientAnamSummary" class="patient-summary-box"></div>
             </div>
 
             <div class="patient-anam-actions">
-                <button type="button" class="small-btn" onclick="patientAnamReset()">Réinitialiser</button>
-                <button type="button" class="small-btn" onclick="patientAnamClose()">Fermer sans copier</button>
-                <button type="button" class="main-btn" onclick="patientAnamApply()">Reporter dans le formulaire</button>
+                <div class="patient-anam-actions-left">
+                    <button type="button" class="small-btn" onclick="patientAnamPrev()">Retour</button>
+                    <button type="button" class="small-btn" onclick="patientAnamReset()">Réinitialiser</button>
+                </div>
+                <div class="patient-anam-actions-right">
+                    <button type="button" class="small-btn" onclick="patientAnamClose()">Fermer</button>
+                    <button id="patientAnamNextBtn" type="button" class="main-btn" onclick="patientAnamNext()">Suivant</button>
+                    <button id="patientAnamApplyBtn" type="button" class="main-btn" style="display:none;" onclick="patientAnamApply()">Reporter dans le formulaire</button>
+                </div>
             </div>
         </div>
     </div>
-
-    <fieldset>
-        <legend>Photo-mesure & diagnostic IA — OD / OG</legend>
-        <p class="measure-help">
-            Fonction expérimentale : photo OD/OG, mesures par calibration cornéenne, puis avis IA descriptif selon une logique segment antérieur/contactologie. Gradation demandée selon l’échelle d’Efron 0 à 4. L’IA doit aussi signaler si une lentille de contact est visible.
-        </p>
-        <div class="ai-config-box">
-            <label>Endpoint IA Cloudflare Worker</label>
-            <input id="eyeAiEndpoint" type="text" value="https://opto-diagnostic-ai.ulysse-chemelle.workers.dev/" placeholder="URL du Worker Cloudflare">
-            <small>Le bouton IA envoie la photo vers ton Worker Cloudflare. Évite les données nominatives sur les photos pour un usage réel patient.</small>
-        </div>
-
-        <div class="photo-measure-grid">
-            <div>
-                <h4>Œil droit — OD</h4>
-                <div class="file-picker-box">
-                    <label>Prendre une photo OD</label><input id="eyeMeasureCamera_od" type="file" accept="image/*" capture="environment">
-                    <label>Choisir galerie OD</label><input id="eyeMeasureGallery_od" type="file" accept="image/*">
-                </div>
-                <div id="eyeMeasureFileInfo_od" style="font-size:13px;color:#555;margin:4px 0 8px;">Aucune photo OD chargée</div>
-                <div class="measure-canvas-wrap"><canvas id="eyeMeasureCanvas_od"></canvas></div>
-                <div class="eye-action-panel">
-                    <label>DHIV OD de référence (mm)</label><input id="eyeMeasureCorneaMm_od" type="number" step="0.1" min="9" max="14.5" value="12.5">
-                    <div class="eye-action-row">
-                        <button type="button" class="small-btn" onclick="eyeMeasureStart('od')">Mesure OD</button>
-                        <button type="button" class="small-btn" onclick="eyeMeasureUndo('od')">Annuler point</button>
-                        <button type="button" class="small-btn" onclick="eyeMeasureReset('od')">Réinitialiser points</button>
-                        <button type="button" class="small-btn" onclick="eyeMeasureClearPhoto('od')">Supprimer photo</button>
-                        <button type="button" class="main-btn" onclick="eyeMeasureApply('od')">Copier mesures OD</button>
-                        <div id="eyeMeasureStatus_od" class="measure-status">Importe une photo OD, puis clique sur « Mesure OD ».</div>
-                    </div>
-                    <div class="eye-action-row">
-                        <button type="button" class="main-btn" onclick="eyeAiAnalyze('od')">Diagnostic IA OD</button>
-                        <button type="button" class="small-btn" onclick="eyeAiApplyLast('od')">Copier avis IA OD dans l’anamnèse</button>
-                        <div id="eyeAiStatus_od" class="measure-status">IA OD : en attente.</div>
-                    </div>
-                    <textarea id="eyeAiResult_od" placeholder="Avis IA OD"></textarea>
-                    <div class="ai-warn">Aide descriptive non diagnostique. En cas de douleur, baisse d’acuité, photophobie, opacité cornéenne, ulcère suspect ou rougeur importante : orientation médicale.</div>
-                </div>
-                <div class="measure-results" style="margin-top:10px;"><table><tr><th>Mesure</th><th>Pixels</th><th>mm</th></tr><tr><td>Cornée horizontale</td><td id="emCorneaPx_od">—</td><td id="emCorneaMm_od">—</td></tr><tr><td>Pupille</td><td id="emPupilPx_od">—</td><td id="emPupilMm_od">—</td></tr><tr><td>Fente palpébrale</td><td id="emAperturePx_od">—</td><td id="emApertureMm_od">—</td></tr><tr><td>Angle paupière sup. TABO</td><td>—</td><td id="emUpperAngle_od">—</td></tr><tr><td>Angle paupière inf. TABO</td><td>—</td><td id="emLowerAngle_od">—</td></tr></table></div>
-                <label>Commentaire qualité / limites OD</label><textarea id="eyeMeasureComment_od" style="height:70px;" readonly></textarea>
-            </div>
-            <div>
-                <h4>Œil gauche — OG</h4>
-                <div class="file-picker-box">
-                    <label>Prendre une photo OG</label><input id="eyeMeasureCamera_og" type="file" accept="image/*" capture="environment">
-                    <label>Choisir galerie OG</label><input id="eyeMeasureGallery_og" type="file" accept="image/*">
-                </div>
-                <div id="eyeMeasureFileInfo_og" style="font-size:13px;color:#555;margin:4px 0 8px;">Aucune photo OG chargée</div>
-                <div class="measure-canvas-wrap"><canvas id="eyeMeasureCanvas_og"></canvas></div>
-                <div class="eye-action-panel">
-                    <label>DHIV OG de référence (mm)</label><input id="eyeMeasureCorneaMm_og" type="number" step="0.1" min="9" max="14.5" value="12.5">
-                    <div class="eye-action-row">
-                        <button type="button" class="small-btn" onclick="eyeMeasureStart('og')">Mesure OG</button>
-                        <button type="button" class="small-btn" onclick="eyeMeasureUndo('og')">Annuler point</button>
-                        <button type="button" class="small-btn" onclick="eyeMeasureReset('og')">Réinitialiser points</button>
-                        <button type="button" class="small-btn" onclick="eyeMeasureClearPhoto('og')">Supprimer photo</button>
-                        <button type="button" class="main-btn" onclick="eyeMeasureApply('og')">Copier mesures OG</button>
-                        <div id="eyeMeasureStatus_og" class="measure-status">Importe une photo OG, puis clique sur « Mesure OG ».</div>
-                    </div>
-                    <div class="eye-action-row">
-                        <button type="button" class="main-btn" onclick="eyeAiAnalyze('og')">Diagnostic IA OG</button>
-                        <button type="button" class="small-btn" onclick="eyeAiApplyLast('og')">Copier avis IA OG dans l’anamnèse</button>
-                        <div id="eyeAiStatus_og" class="measure-status">IA OG : en attente.</div>
-                    </div>
-                    <textarea id="eyeAiResult_og" placeholder="Avis IA OG"></textarea>
-                    <div class="ai-warn">Aide descriptive non diagnostique. En cas de douleur, baisse d’acuité, photophobie, opacité cornéenne, ulcère suspect ou rougeur importante : orientation médicale.</div>
-                </div>
-                <div class="measure-results" style="margin-top:10px;"><table><tr><th>Mesure</th><th>Pixels</th><th>mm</th></tr><tr><td>Cornée horizontale</td><td id="emCorneaPx_og">—</td><td id="emCorneaMm_og">—</td></tr><tr><td>Pupille</td><td id="emPupilPx_og">—</td><td id="emPupilMm_og">—</td></tr><tr><td>Fente palpébrale</td><td id="emAperturePx_og">—</td><td id="emApertureMm_og">—</td></tr><tr><td>Angle paupière sup. TABO</td><td>—</td><td id="emUpperAngle_og">—</td></tr><tr><td>Angle paupière inf. TABO</td><td>—</td><td id="emLowerAngle_og">—</td></tr></table></div>
-                <label>Commentaire qualité / limites OG</label><textarea id="eyeMeasureComment_og" style="height:70px;" readonly></textarea>
-            </div>
-        </div>
-        <div style="margin-top:10px;font-size:13px;line-height:1.35;"><span class="measure-chip">1-2 : limbe nasal/temporal</span><span class="measure-chip">3-4 : bords pupille</span><span class="measure-chip">5-6 : fente palpébrale</span><span class="measure-chip">7-8 : angle paupière sup. TABO</span><span class="measure-chip">9-10 : angle paupière inf. TABO</span></div>
-        <label style="margin-top:12px;">Synthèse IA copiée dans l’anamnèse</label>
-        <textarea id="anam_ia" style="height:130px;" placeholder="Les avis IA OD/OG copiés apparaîtront ici et seront inclus dans le PDF."></textarea>
-    </fieldset>
 
     <fieldset>
         <legend>Habitudes visuelles</legend>
@@ -1461,42 +1416,42 @@ function eyeAiApplyLast(side){const text=em(`eyeAiResult_${side}`)?.value||'';co
 function eyeAiApplyStructured(side,data){const hyper=Number(data.hyperemie_conjonctivale_bulbaire_grade_efron),limb=Number(data.hyperemie_limbique_grade_efron),paup=Number(data.paupiere_bord_libre_grade_efron);if(Number.isFinite(hyper)&&em(`cb_${side}_hyper`))em(`cb_${side}_hyper`).value=String(Math.max(0,Math.min(4,Math.round(hyper))));if(Number.isFinite(paup)&&em(`pau_${side}_deg`))em(`pau_${side}_deg`).value=String(Math.max(0,Math.min(4,Math.round(paup))));if(String(data.pinguecula||'').toLowerCase().includes('prés')||String(data.pinguecula||'').toLowerCase().includes('possible')){const cb=em(`cb_${side}_ping`);if(cb)cb.checked=true;}const cbRem=em('cb_rem');if(cbRem){const alertes=Array.isArray(data.signes_alerte)?data.signes_alerte.join(', '):String(data.signes_alerte||'pas de signe');cbRem.value=[cbRem.value,`IA ${side.toUpperCase()} Efron — hyperémie bulbaire ${Number.isFinite(hyper)?hyper+'/4':'NE'}, limbique ${Number.isFinite(limb)?limb+'/4':'NE'}, lentille visible : ${data.lentille_visible||'non évalué'}, signes d’alerte : ${alertes||'pas de signe'}`].filter(Boolean).join('\n');}}
 
 
-function patientAnamEnsureRating(q){
-    if(!q)return;
-    let rating=q.querySelector('.patient-rating');
-    if(!rating){
-        rating=document.createElement('div');
-        rating.className='patient-rating';
-        rating.innerHTML='<div class="patient-rating-label">Intensité ressentie par le patient : 1 = léger, 4 = très gênant</div><div class="patient-rating-stars"><button type="button" data-grade="1">★</button><button type="button" data-grade="2">★★</button><button type="button" data-grade="3">★★★</button><button type="button" data-grade="4">★★★★</button></div>';
-        q.appendChild(rating);
-    }
-    rating.classList.add('active');
-}
+const patientAnamQuestions = [
+    {key:'lunettes', section:'Correction actuelle', label:'Port de lunettes', question:'Portez-vous actuellement des lunettes ?', type:'yesno', gradeOnYes:true, gradeLabel:'Qualité de vision avec vos lunettes : 1 = mauvaise, 4 = très satisfaisante'},
+    {key:'flou_l', section:'Symptômes', label:'Vision floue de loin', question:'Votre vision est-elle floue de loin ?', type:'yesno', gradeOnYes:true},
+    {key:'flou_p', section:'Symptômes', label:'Vision floue de près', question:'Votre vision est-elle floue de près ?', type:'yesno', gradeOnYes:true},
+    {key:'ceph', section:'Symptômes', label:'Céphalées', question:'Avez-vous des maux de tête ?', type:'yesno', gradeOnYes:true},
+    {key:'fatigue', section:'Symptômes', label:'Fatigue visuelle', question:'Ressentez-vous une fatigue visuelle ?', type:'yesno', gradeOnYes:true},
+    {key:'diplopie', section:'Symptômes', label:'Vision double', question:'Avez-vous parfois une vision double ?', type:'yesno', gradeOnYes:true},
+    {key:'photo', section:'Symptômes', label:'Sensibilité à la lumière', question:'Êtes-vous gêné par la lumière ?', type:'yesno', gradeOnYes:true},
+    {key:'larmoie', section:'Symptômes', label:'Larmoiement', question:'Vos yeux larmoient-ils ?', type:'yesno', gradeOnYes:true},
+    {key:'secheresse', section:'Symptômes', label:'Sensation de sécheresse', question:'Avez-vous une sensation de sécheresse oculaire ?', type:'yesno', gradeOnYes:true},
+    {key:'douleur', section:'Symptômes', label:'Douleur oculaire', question:'Avez-vous une douleur oculaire ?', type:'yesno', gradeOnYes:true},
+    {key:'rougeur', section:'Symptômes', label:'Rougeur oculaire', question:'Avez-vous remarqué une rougeur oculaire ?', type:'yesno', gradeOnYes:true},
+    {key:'corps_etranger', section:'Symptômes', label:'Sensation de corps étranger', question:'Avez-vous une sensation de grain de sable ou de corps étranger ?', type:'yesno', gradeOnYes:true},
+    {key:'lentilles', section:'Correction actuelle', label:'Porteur de lentilles', question:'Portez-vous des lentilles de contact ?', type:'yesno'},
+    {key:'cataracte_perso', section:'Antécédents oculaires personnels', label:'Cataracte personnelle', question:'Vous a-t-on déjà dit que vous aviez une cataracte ?', type:'yesno'},
+    {key:'glaucome_perso', section:'Antécédents oculaires personnels', label:'Glaucome personnel', question:'Vous a-t-on déjà dit que vous aviez un glaucome ?', type:'yesno'},
+    {key:'retine_perso', section:'Antécédents oculaires personnels', label:'Problème de rétine personnel', question:'Vous a-t-on déjà parlé d’un problème de rétine ?', type:'yesno'},
+    {key:'glaucome_famille', section:'Antécédents familiaux', label:'Glaucome dans la famille', question:'Y a-t-il du glaucome dans votre famille ?', type:'yesno'},
+    {key:'chirurgie', section:'Antécédents oculaires personnels', label:'Chirurgie ou traumatisme oculaire', question:'Avez-vous déjà eu une chirurgie ou un traumatisme oculaire ?', type:'yesno'},
+    {key:'diabete', section:'Antécédents médicaux', label:'Diabète', question:'Avez-vous un diabète connu ?', type:'yesno'},
+    {key:'hta', section:'Antécédents médicaux', label:'Hypertension artérielle', question:'Avez-vous une hypertension artérielle connue ?', type:'yesno'},
+    {key:'motif_libre', section:'Motif', label:'Motif principal', question:'Quel est le motif principal de votre visite ?', type:'text', placeholder:'Ex. contrôle, renouvellement, gêne en vision de près…'},
+    {key:'notes_libres', section:'Commentaires', label:'Commentaires libres du patient', question:'Souhaitez-vous ajouter une précision ?', type:'text', placeholder:'Durée, contexte, fréquence, déclencheurs, traitements…'},
+    {key:'derniere_visite_ophtalmo', section:'Suivi ophtalmologique', label:'Dernière visite ophtalmologique', question:'Quand avez-vous vu un ophtalmologue pour la dernière fois ?', type:'choice', choices:[['moins_1_an','Moins d’un an'],['entre_1_3_ans','Entre 1 et 3 ans'],['plus_3_ans','Plus de 3 ans'],['jamais','Jamais']]},
+    {key:'summary', section:'Validation', label:'Résumé', question:'Résumé de vos réponses', type:'summary'}
+];
 
-function patientAnamHideRating(q){
-    if(!q)return;
-    q.removeAttribute('data-grade');
-    const rating=q.querySelector('.patient-rating');
-    if(rating){
-        rating.classList.remove('active');
-        rating.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
-    }
-}
-
-function patientAnamRate(button){
-    const q=button.closest('.patient-question');
-    if(!q)return;
-    const grade=button.getAttribute('data-grade')||'';
-    q.setAttribute('data-grade',grade);
-    q.querySelectorAll('.patient-rating-stars button').forEach(b=>b.classList.remove('active'));
-    button.classList.add('active');
-}
+const patientAnamState = { index:0, answers:{} };
 
 function patientAnamOpen(){
     const modal=em('patientAnamModal');
     if(!modal)return;
     modal.classList.add('active');
     modal.setAttribute('aria-hidden','false');
+    patientAnamState.index=0;
+    patientAnamRender();
 }
 
 function patientAnamClose(){
@@ -1507,39 +1462,143 @@ function patientAnamClose(){
 }
 
 function patientAnamReset(){
-    document.querySelectorAll('#patientAnamModal .patient-question').forEach(q=>{
-        q.removeAttribute('data-answer');
-        q.removeAttribute('data-grade');
-        q.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
-        const rating=q.querySelector('.patient-rating');
-        if(rating)rating.classList.remove('active');
-    });
-    const motif=em('patientAnamMotif');
-    const notes=em('patientAnamNotes');
-    if(motif)motif.value='';
-    if(notes)notes.value='';
+    patientAnamState.index=0;
+    patientAnamState.answers={};
+    patientAnamRender();
 }
 
-function patientAnamAnswer(button){
-    const q=button.closest('.patient-question');
+function patientAnamCurrent(){return patientAnamQuestions[patientAnamState.index];}
+
+function patientAnamSetAnswer(key,value){
+    patientAnamState.answers[key]=patientAnamState.answers[key]||{};
+    patientAnamState.answers[key].value=value;
+    const q=patientAnamCurrent();
+    if(!(q&&q.gradeOnYes&&value==='oui')) delete patientAnamState.answers[key].grade;
+    patientAnamRender();
+    if(q && q.type!=='text' && !(q.gradeOnYes&&value==='oui')) setTimeout(patientAnamNext,120);
+}
+
+function patientAnamSetGrade(key,grade){
+    patientAnamState.answers[key]=patientAnamState.answers[key]||{};
+    patientAnamState.answers[key].grade=String(grade);
+    patientAnamRender();
+    setTimeout(patientAnamNext,160);
+}
+
+function patientAnamSetText(key,value){
+    patientAnamState.answers[key]=patientAnamState.answers[key]||{};
+    patientAnamState.answers[key].value=value;
+}
+
+function patientAnamPrev(){
+    if(patientAnamState.index>0){patientAnamState.index--;patientAnamRender();}
+}
+
+function patientAnamNext(){
+    if(patientAnamState.index<patientAnamQuestions.length-1){patientAnamState.index++;patientAnamRender();}
+}
+
+function patientAnamRender(){
+    const q=patientAnamCurrent();
     if(!q)return;
-    const value=button.getAttribute('data-v')||'';
-    q.setAttribute('data-answer',value);
-    q.querySelectorAll('.patient-choice button').forEach(b=>b.classList.remove('active'));
-    button.classList.add('active');
-    const gradeable=q.getAttribute('data-gradeable')!=='no';
-    if(value==='oui' && gradeable) patientAnamEnsureRating(q);
-    else patientAnamHideRating(q);
+    const ans=patientAnamState.answers[q.key]||{};
+    const total=patientAnamQuestions.length;
+    const step=patientAnamState.index+1;
+    const pct=Math.round((step/total)*100);
+    const txt=em('patientAnamProgressText'); if(txt)txt.textContent=`Question ${step}/${total}`;
+    const fill=em('patientAnamProgressFill'); if(fill)fill.style.width=pct+'%';
+    const kicker=em('patientAnamKicker'); if(kicker)kicker.textContent=q.section||'Question';
+    const question=em('patientAnamQuestion'); if(question)question.textContent=q.question;
+    const help=em('patientAnamHelp'); if(help)help.textContent=q.help||'';
+    const answers=em('patientAnamAnswers');
+    const rating=em('patientAnamRating');
+    const free=em('patientAnamFreeInput');
+    const summary=em('patientAnamSummary');
+    const next=em('patientAnamNextBtn');
+    const apply=em('patientAnamApplyBtn');
+    if(answers)answers.innerHTML='';
+    if(rating){rating.innerHTML='';rating.classList.remove('active');}
+    if(free){free.innerHTML='';free.style.display='none';}
+    if(summary){summary.innerHTML='';summary.classList.remove('active');}
+    if(next)next.style.display=q.type==='summary'?'none':'inline-block';
+    if(apply)apply.style.display=q.type==='summary'?'inline-block':'none';
+
+    if(q.type==='yesno'){
+        [['oui','Oui'],['non','Non']].forEach(([v,label])=>{
+            const b=document.createElement('button');
+            b.type='button';
+            b.className='patient-big-choice'+(ans.value===v?' active':'');
+            b.textContent=label;
+            b.onclick=()=>patientAnamSetAnswer(q.key,v);
+            answers.appendChild(b);
+        });
+        if(q.gradeOnYes && ans.value==='oui'){
+            if(help)help.textContent=q.gradeLabel||'Évaluez la gêne : 1 = légère, 4 = très gênante.';
+            rating.classList.add('active');
+            [1,2,3,4].forEach(n=>{
+                const b=document.createElement('button');
+                b.type='button';
+                b.className='patient-star-choice'+(ans.grade===String(n)?' active':'');
+                b.textContent='★'.repeat(n);
+                b.title=String(n)+'/4';
+                b.onclick=()=>patientAnamSetGrade(q.key,n);
+                rating.appendChild(b);
+            });
+        }
+    }else if(q.type==='choice'){
+        (q.choices||[]).forEach(([v,label])=>{
+            const b=document.createElement('button');
+            b.type='button';
+            b.className='patient-big-choice'+(ans.value===v?' active':'');
+            b.textContent=label;
+            b.onclick=()=>patientAnamSetAnswer(q.key,v);
+            answers.appendChild(b);
+        });
+    }else if(q.type==='text'){
+        if(free){
+            free.style.display='block';
+            free.innerHTML=`<textarea placeholder="${q.placeholder||''}"></textarea>`;
+            const ta=free.querySelector('textarea');
+            ta.value=ans.value||'';
+            ta.oninput=()=>patientAnamSetText(q.key,ta.value);
+            setTimeout(()=>ta.focus(),50);
+        }
+    }else if(q.type==='summary'){
+        if(summary){summary.classList.add('active');summary.innerHTML=patientAnamBuildSummaryHtml();}
+    }
+}
+
+function patientAnamAnswerLabel(q,a){
+    if(!a||!a.value)return '';
+    if(q.type==='choice'){
+        const found=(q.choices||[]).find(c=>c[0]===a.value);
+        return found?found[1]:a.value;
+    }
+    if(q.type==='text')return String(a.value||'').trim();
+    if(a.value==='oui')return a.grade ? `Oui (${a.grade}/4)` : 'Oui';
+    if(a.value==='non')return 'Non';
+    return a.value;
+}
+
+function patientAnamBuildSummaryHtml(){
+    const groups={};
+    patientAnamQuestions.forEach(q=>{
+        if(q.type==='summary')return;
+        const a=patientAnamState.answers[q.key];
+        const label=patientAnamAnswerLabel(q,a);
+        if(!label)return;
+        groups[q.section]=groups[q.section]||[];
+        groups[q.section].push(`<li><strong>${q.label} :</strong> ${label}</li>`);
+    });
+    return Object.entries(groups).map(([section,items])=>`<h4>${section}</h4><ul>${items.join('')}</ul>`).join('')||'<p>Aucune réponse renseignée.</p>';
 }
 
 function patientAnamCollect(){
     const answers={};
-    document.querySelectorAll('#patientAnamModal .patient-question').forEach(q=>{
-        const key=q.getAttribute('data-q');
-        const label=q.getAttribute('data-label')||key;
-        const value=q.getAttribute('data-answer')||'';
-        const grade=q.getAttribute('data-grade')||'';
-        if(key)answers[key]={label,value,grade};
+    patientAnamQuestions.forEach(q=>{
+        if(q.type==='summary')return;
+        const a=patientAnamState.answers[q.key]||{};
+        answers[q.key]={label:q.label,value:a.value||'',grade:a.grade||'',type:q.type,section:q.section,choices:q.choices||[]};
     });
     return answers;
 }
@@ -1552,21 +1611,28 @@ function appendUniqueLineToTextarea(id,line){
     el.value=[current,line].filter(Boolean).join(current?'\n':'');
 }
 
-
 function patientAnamLabelWithGrade(answer){
     if(!answer)return '';
     return answer.grade ? `${answer.label} (${answer.grade}/4)` : answer.label;
+}
+
+function patientAnamChoiceText(answer){
+    if(!answer)return '';
+    if(answer.type==='choice'){
+        const found=(answer.choices||[]).find(c=>c[0]===answer.value);
+        return found?found[1]:answer.value;
+    }
+    return answer.value||'';
 }
 
 function patientAnamApply(){
     const answers=patientAnamCollect();
     const isYes=k=>answers[k]&&answers[k].value==='oui';
     const answerValue=k=>answers[k]?answers[k].value:'';
-    const isClinicalSymptom=a=>a && a.value==='oui' && a.grade;
-    const yesLabels=Object.values(answers).filter(a=>a.value==='oui').map(a=>isClinicalSymptom(a) ? `${a.label} (${a.grade}/4)` : a.label);
+    const yesLabels=Object.values(answers).filter(a=>a.value==='oui').map(a=>a.grade ? `${a.label} (${a.grade}/4)` : a.label);
     const noLabels=Object.values(answers).filter(a=>a.value==='non').map(a=>a.label);
-    const motifTxt=(em('patientAnamMotif')?.value||'').trim();
-    const notesTxt=(em('patientAnamNotes')?.value||'').trim();
+    const motifTxt=(answers.motif_libre?.value||'').trim();
+    const notesTxt=(answers.notes_libres?.value||'').trim();
 
     if(em('sym_flou'))em('sym_flou').checked=isYes('flou_l')||isYes('flou_p');
     if(em('sym_ceph'))em('sym_ceph').checked=isYes('ceph');
@@ -1577,8 +1643,8 @@ function patientAnamApply(){
 
     const motifLines=[];
     if(motifTxt)motifLines.push(motifTxt);
-    if(answerValue('ancienne_correction'))motifLines.push('Port de l’ancienne correction : '+(isYes('ancienne_correction')?'oui':'non')+'.');
-    if(answerValue('derniere_visite_ophtalmo'))motifLines.push('Dernière visite ophtalmologique : '+(answerValue('derniere_visite_ophtalmo')==='moins_3_ans'?'moins de 3 ans':'plus de 3 ans')+'.');
+    if(answerValue('lunettes'))motifLines.push('Porte actuellement des lunettes : '+(isYes('lunettes')?'oui'+(answers.lunettes.grade?' — qualité estimée '+answers.lunettes.grade+'/4':''):'non')+'.');
+    if(answerValue('derniere_visite_ophtalmo'))motifLines.push('Dernière visite ophtalmologique : '+patientAnamChoiceText(answers.derniere_visite_ophtalmo)+'.');
     if(yesLabels.length)motifLines.push('Auto-anamnèse patient — réponses positives : '+yesLabels.join(', ')+'.');
     if(noLabels.length)motifLines.push('Réponses négatives : '+noLabels.join(', ')+'.');
     if(notesTxt)motifLines.push('Commentaire patient : '+notesTxt);
@@ -1598,21 +1664,18 @@ function patientAnamApply(){
     if(antMed.length)appendUniqueLineToTextarea('ant_med','Auto-anamnèse : '+antMed.join(', ')+'.');
 
     const antOcu=[];
-    if(isYes('glaucome'))antOcu.push('Antécédent familial de glaucome déclaré');
+    if(isYes('cataracte_perso'))antOcu.push('Cataracte déclarée par le patient');
+    if(isYes('glaucome_perso'))antOcu.push('Glaucome déclaré par le patient');
+    if(isYes('retine_perso'))antOcu.push('Problème de rétine déclaré par le patient');
+    if(isYes('glaucome_famille'))antOcu.push('Antécédent familial de glaucome déclaré');
     if(isYes('chirurgie'))antOcu.push('Chirurgie/traumatisme oculaire déclaré');
-    if(answerValue('derniere_visite_ophtalmo'))antOcu.push('Dernière visite ophtalmologique : '+(answerValue('derniere_visite_ophtalmo')==='moins_3_ans'?'moins de 3 ans':'plus de 3 ans'));
+    if(answerValue('derniere_visite_ophtalmo'))antOcu.push('Dernière visite ophtalmologique : '+patientAnamChoiceText(answers.derniere_visite_ophtalmo));
     if(antOcu.length)appendUniqueLineToTextarea('ant_ocu','Auto-anamnèse : '+antOcu.join(', ')+'.');
 
     saveFormState();
     patientAnamClose();
 }
 
-document.addEventListener('click',e=>{
-    const ratingBtn=e.target.closest('#patientAnamModal .patient-rating-stars button');
-    if(ratingBtn){patientAnamRate(ratingBtn);return;}
-    const btn=e.target.closest('#patientAnamModal .patient-choice button');
-    if(btn)patientAnamAnswer(btn);
-});
 
 document.addEventListener('DOMContentLoaded',()=>{try{initAutoSave();}catch(e){console.error(e);}try{eyeMeasureInit();}catch(e){console.error(e);alert('Erreur initialisation photo : '+e.message);}});
 
