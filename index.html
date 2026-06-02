@@ -191,6 +191,11 @@ button{
 .ai-diagnostic-box textarea{min-height:140px;font-family:Arial,sans-serif;font-size:13px;}
 .ai-warn{margin-top:6px;color:#7a4b00;font-size:12px;line-height:1.35;}
 @media (max-width:900px){.photo-measure-grid{grid-template-columns:1fr;}}
+.eye-action-panel{margin-top:10px;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fafafa;}
+.eye-action-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0;}
+.eye-action-row .measure-status{flex:1 1 260px;margin-top:0;}
+.eye-action-panel textarea{margin-top:8px;}
+
 
 #printContainer{
     display:none;
@@ -290,22 +295,24 @@ button{
                 </div>
                 <div id="eyeMeasureFileInfo_od" style="font-size:13px;color:#555;margin:4px 0 8px;">Aucune photo OD chargée</div>
                 <div class="measure-canvas-wrap"><canvas id="eyeMeasureCanvas_od"></canvas></div>
-                <div class="ai-diagnostic-box" style="margin-top:10px;">
-                    <button type="button" class="main-btn" onclick="eyeAiAnalyze('od')">Diagnostic IA OD</button>
-                    <button type="button" class="small-btn" onclick="eyeAiApplyLast('od')">Copier avis IA OD dans l’anamnèse</button>
-                    <div id="eyeAiStatus_od" class="measure-status">IA OD : en attente.</div>
+                <div class="eye-action-panel">
+                    <label>DHIV OD de référence (mm)</label><input id="eyeMeasureCorneaMm_od" type="number" step="0.1" min="9" max="14.5" value="12.5">
+                    <div class="eye-action-row">
+                        <button type="button" class="small-btn" onclick="eyeMeasureStart('od')">Mesure OD</button>
+                        <button type="button" class="small-btn" onclick="eyeMeasureUndo('od')">Annuler point</button>
+                        <button type="button" class="small-btn" onclick="eyeMeasureReset('od')">Réinitialiser points</button>
+                        <button type="button" class="small-btn" onclick="eyeMeasureClearPhoto('od')">Supprimer photo</button>
+                        <button type="button" class="main-btn" onclick="eyeMeasureApply('od')">Copier mesures OD</button>
+                        <div id="eyeMeasureStatus_od" class="measure-status">Importe une photo OD, puis clique sur « Mesure OD ».</div>
+                    </div>
+                    <div class="eye-action-row">
+                        <button type="button" class="main-btn" onclick="eyeAiAnalyze('od')">Diagnostic IA OD</button>
+                        <button type="button" class="small-btn" onclick="eyeAiApplyLast('od')">Copier avis IA OD dans l’anamnèse</button>
+                        <div id="eyeAiStatus_od" class="measure-status">IA OD : en attente.</div>
+                    </div>
                     <textarea id="eyeAiResult_od" placeholder="Avis IA OD"></textarea>
                     <div class="ai-warn">Aide descriptive non diagnostique. En cas de douleur, baisse d’acuité, photophobie, opacité cornéenne, ulcère suspect ou rougeur importante : orientation médicale.</div>
                 </div>
-                <label style="margin-top:8px;">DHIV OD de référence (mm)</label><input id="eyeMeasureCorneaMm_od" type="number" step="0.1" min="9" max="14.5" value="12.5">
-                <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
-                    <button type="button" class="small-btn" onclick="eyeMeasureStart('od')">Démarrer OD</button>
-                    <button type="button" class="small-btn" onclick="eyeMeasureUndo('od')">Annuler point</button>
-                    <button type="button" class="small-btn" onclick="eyeMeasureReset('od')">Réinitialiser points</button>
-                    <button type="button" class="small-btn" onclick="eyeMeasureClearPhoto('od')">Supprimer photo</button>
-                    <button type="button" class="main-btn" onclick="eyeMeasureApply('od')">Copier mesures OD</button>
-                </div>
-                <div id="eyeMeasureStatus_od" class="measure-status">Importe une photo OD, puis clique sur « Démarrer OD ».</div>
                 <div class="measure-results" style="margin-top:10px;"><table><tr><th>Mesure</th><th>Pixels</th><th>mm</th></tr><tr><td>Cornée horizontale</td><td id="emCorneaPx_od">—</td><td id="emCorneaMm_od">—</td></tr><tr><td>Pupille</td><td id="emPupilPx_od">—</td><td id="emPupilMm_od">—</td></tr><tr><td>Fente palpébrale</td><td id="emAperturePx_od">—</td><td id="emApertureMm_od">—</td></tr><tr><td>Angle paupière sup. TABO</td><td>—</td><td id="emUpperAngle_od">—</td></tr><tr><td>Angle paupière inf. TABO</td><td>—</td><td id="emLowerAngle_od">—</td></tr></table></div>
                 <label>Commentaire qualité / limites OD</label><textarea id="eyeMeasureComment_od" style="height:70px;" readonly></textarea>
             </div>
@@ -317,22 +324,24 @@ button{
                 </div>
                 <div id="eyeMeasureFileInfo_og" style="font-size:13px;color:#555;margin:4px 0 8px;">Aucune photo OG chargée</div>
                 <div class="measure-canvas-wrap"><canvas id="eyeMeasureCanvas_og"></canvas></div>
-                <div class="ai-diagnostic-box" style="margin-top:10px;">
-                    <button type="button" class="main-btn" onclick="eyeAiAnalyze('og')">Diagnostic IA OG</button>
-                    <button type="button" class="small-btn" onclick="eyeAiApplyLast('og')">Copier avis IA OG dans l’anamnèse</button>
-                    <div id="eyeAiStatus_og" class="measure-status">IA OG : en attente.</div>
+                <div class="eye-action-panel">
+                    <label>DHIV OG de référence (mm)</label><input id="eyeMeasureCorneaMm_og" type="number" step="0.1" min="9" max="14.5" value="12.5">
+                    <div class="eye-action-row">
+                        <button type="button" class="small-btn" onclick="eyeMeasureStart('og')">Mesure OG</button>
+                        <button type="button" class="small-btn" onclick="eyeMeasureUndo('og')">Annuler point</button>
+                        <button type="button" class="small-btn" onclick="eyeMeasureReset('og')">Réinitialiser points</button>
+                        <button type="button" class="small-btn" onclick="eyeMeasureClearPhoto('og')">Supprimer photo</button>
+                        <button type="button" class="main-btn" onclick="eyeMeasureApply('og')">Copier mesures OG</button>
+                        <div id="eyeMeasureStatus_og" class="measure-status">Importe une photo OG, puis clique sur « Mesure OG ».</div>
+                    </div>
+                    <div class="eye-action-row">
+                        <button type="button" class="main-btn" onclick="eyeAiAnalyze('og')">Diagnostic IA OG</button>
+                        <button type="button" class="small-btn" onclick="eyeAiApplyLast('og')">Copier avis IA OG dans l’anamnèse</button>
+                        <div id="eyeAiStatus_og" class="measure-status">IA OG : en attente.</div>
+                    </div>
                     <textarea id="eyeAiResult_og" placeholder="Avis IA OG"></textarea>
                     <div class="ai-warn">Aide descriptive non diagnostique. En cas de douleur, baisse d’acuité, photophobie, opacité cornéenne, ulcère suspect ou rougeur importante : orientation médicale.</div>
                 </div>
-                <label style="margin-top:8px;">DHIV OG de référence (mm)</label><input id="eyeMeasureCorneaMm_og" type="number" step="0.1" min="9" max="14.5" value="12.5">
-                <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
-                    <button type="button" class="small-btn" onclick="eyeMeasureStart('og')">Démarrer OG</button>
-                    <button type="button" class="small-btn" onclick="eyeMeasureUndo('og')">Annuler point</button>
-                    <button type="button" class="small-btn" onclick="eyeMeasureReset('og')">Réinitialiser points</button>
-                    <button type="button" class="small-btn" onclick="eyeMeasureClearPhoto('og')">Supprimer photo</button>
-                    <button type="button" class="main-btn" onclick="eyeMeasureApply('og')">Copier mesures OG</button>
-                </div>
-                <div id="eyeMeasureStatus_og" class="measure-status">Importe une photo OG, puis clique sur « Démarrer OG ».</div>
                 <div class="measure-results" style="margin-top:10px;"><table><tr><th>Mesure</th><th>Pixels</th><th>mm</th></tr><tr><td>Cornée horizontale</td><td id="emCorneaPx_og">—</td><td id="emCorneaMm_og">—</td></tr><tr><td>Pupille</td><td id="emPupilPx_og">—</td><td id="emPupilMm_og">—</td></tr><tr><td>Fente palpébrale</td><td id="emAperturePx_og">—</td><td id="emApertureMm_og">—</td></tr><tr><td>Angle paupière sup. TABO</td><td>—</td><td id="emUpperAngle_og">—</td></tr><tr><td>Angle paupière inf. TABO</td><td>—</td><td id="emLowerAngle_og">—</td></tr></table></div>
                 <label>Commentaire qualité / limites OG</label><textarea id="eyeMeasureComment_og" style="height:70px;" readonly></textarea>
             </div>
@@ -1238,6 +1247,7 @@ const eyeMeasures={od:createEyeMeasureState('od'),og:createEyeMeasureState('og')
 
 const eyeAiLast={od:null,og:null};
 function em(id){return document.getElementById(id);}
+function eyeAiSetStatus(side,text){const el=em(`eyeAiStatus_${side}`);if(el)el.textContent=`IA ${side.toUpperCase()} : ${text}`;}
 function normaliseSavedValue(value){
     if(value === null || value === undefined) return '';
     if(typeof value === 'object') return '';
