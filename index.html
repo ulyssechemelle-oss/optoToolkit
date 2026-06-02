@@ -224,6 +224,7 @@ button{
 
 <div style="padding:10px;">
     <button class="main-btn" onclick="exportPDF()">📄 Exporter en PDF</button>
+    <button class="small-btn" onclick="resetOptoToolkitLocalData()" style="margin-left:8px;">Réinitialiser les données locales</button>
 </div>
 
 <!-- ONGLET 1 -->
@@ -1231,9 +1232,65 @@ button{
 
 <script>
 
-const STORAGE_KEY='opto_questionnaire_autosave_v5';
+const STORAGE_KEY='opto_questionnaire_autosave_v6';
 const PHOTO_KEYS={od:'opto_eye_measure_photo_od_v5',og:'opto_eye_measure_photo_og_v5'};
 const eyeMeasures={od:createEyeMeasureState('od'),og:createEyeMeasureState('og')};
+
+const eyeAiLast={od:null,og:null};
+function em(id){return document.getElementById(id);}
+function normaliseSavedValue(value){
+    if(value === null || value === undefined) return '';
+    if(typeof value === 'object') return '';
+    const s=String(value);
+    if(s === '[object Object]' || s === '[object HTMLInputElement]' || s === '[object HTMLTextAreaElement]' || s === '[object HTMLSelectElement]') return '';
+    return s;
+}
+
+function saveFormState(){
+    try{
+        const data={};
+        document.querySelectorAll('input, textarea, select').forEach(el=>{
+            if(!el.id || el.type==='file') return;
+            if(el.type==='checkbox' || el.type==='radio') data[el.id]=!!el.checked;
+            else data[el.id]=normaliseSavedValue(el.value);
+        });
+        localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+    }catch(e){}
+}
+
+function initAutoSave(){
+    try{
+        // Nettoyage des anciennes sauvegardes qui pouvaient remettre [object Object] dans les champs.
+        ['opto_questionnaire_autosave_v4','opto_questionnaire_autosave_v5'].forEach(k=>{
+            try{localStorage.removeItem(k);}catch(e){}
+        });
+        const raw=localStorage.getItem(STORAGE_KEY);
+        if(raw){
+            const data=JSON.parse(raw);
+            Object.keys(data).forEach(id=>{
+                const el=em(id);
+                if(!el || el.type==='file') return;
+                if(el.type==='checkbox'||el.type==='radio') el.checked=!!data[id];
+                else el.value=normaliseSavedValue(data[id]);
+            });
+        }
+    }catch(e){}
+    document.querySelectorAll('input, textarea, select').forEach(el=>{
+        if(el.type==='file') return;
+        el.addEventListener('input',saveFormState);
+        el.addEventListener('change',saveFormState);
+    });
+}
+
+function resetOptoToolkitLocalData(){
+    try{
+        Object.keys(localStorage).forEach(k=>{
+            if(k.startsWith('opto_questionnaire_autosave') || k.startsWith('opto_eye_measure_photo')) localStorage.removeItem(k);
+        });
+    }catch(e){}
+    location.reload();
+}
+
 
 function createEyeMeasureState(side){return{side,img:null,photoDataUrl:null,points:[],running:false,results:{},steps:[
 `1/10 ${side.toUpperCase()} : clique le limbe nasal/temporal gauche visible (frontière sclère blanche / iris coloré).`,
@@ -1248,10 +1305,46 @@ function createEyeMeasureState(side){return{side,img:null,photoDataUrl:null,poin
 `10/10 ${side.toUpperCase()} : clique le second point sur la ligne de la paupière inférieure.`
 ]};}
 
-function eyeMeasureInit(){['od','og'].forEach(side=>{const canvas=em(`eyeMeasureCanvas_${side}`);if(!canvas)return;['Camera','Gallery'].forEach(kind=>{const input=em(`eyeMeasure${kind}_${side}`);if(!input)return;input.addEventListener('change',async e=>{const file=e.target.files&&e.target.files[0];const info=em(`eyeMeasureFileInfo_${side}`);if(!file){if(info)info.textContent='Aucun fichier reçu.';return;}if(info)info.textContent=`${file.name||'photo'} — ${(file.size/1024/1024).toFixed(1)} Mo — ${file.type||'type inconnu'}`;eyeMeasureSetStatus(side,'Chargement de la photo…');try{const dataUrl=await readAndResizeImage(file);await eyeMeasureLoadDataUrl(side,dataUrl,true);eyeMeasureSetStatus(side,`Photo ${side.toUpperCase()} chargée.`);}catch(err){eyeMeasureSetStatus(side,'Photo non lisible : '+err.message);}setTimeout(()=>{try{input.value='';}catch(e){}},500);});});
+function eyeMeasureInit(){['od','og'].forEach(side=>{const canvas=em(`eyeMeasureCanvas_${side}`);if(!canvas)return;['Camera','Gallery'].forEach(kind=>{const input=em(`eyeMeasure${kind}_${side}`);if(!input)return;input.addEventListener('change',async e=>{const file=e.target.files&&e.target.files[0];const info=em(`eyeMeasureFileInfo_${side}`);if(!file){if(info)info.textContent='Aucun fichier reçu.';return;}if(info)info.textContent=`${file.name||'photo'} — ${(file.size/1024/1024).toFixed(1)} Mo — ${file.type||'type inconnu'}`;eyeMeasureSetStatus(side,'Chargement de la photo…');try{const dataUrl=await readAndResizeImage(file);await eyeMeasureLoadDataUrl(side,dataUrl,true);if(info)info.textContent=`Photo ${side.toUpperCase()} chargée : ${file.name||'photo'}`;eyeMeasureSetStatus(side,`Photo ${side.toUpperCase()} chargée.`);}catch(err){if(info)info.textContent='Erreur chargement : '+err.message;eyeMeasureSetStatus(side,'Photo non lisible : '+err.message);console.error(err);}setTimeout(()=>{try{input.value='';}catch(e){}},500);});});
 canvas.addEventListener('click',e=>eyeMeasureCanvasClick(side,e));
 canvas.addEventListener('touchstart',e=>{e.preventDefault();if(e.touches.length!==1)return;const t=e.touches[0];eyeMeasureCanvasClick(side,{clientX:t.clientX,clientY:t.clientY});},{passive:false});
 const saved=localStorage.getItem(PHOTO_KEYS[side]);if(saved)eyeMeasureLoadDataUrl(side,saved,false).catch(()=>localStorage.removeItem(PHOTO_KEYS[side]));else eyeMeasureDraw(side);});}
+
+
+function readFileAsDataUrl(file){
+    return new Promise((resolve,reject)=>{
+        const reader=new FileReader();
+        reader.onload=()=>resolve(reader.result);
+        reader.onerror=()=>reject(new Error('Lecture du fichier impossible'));
+        reader.readAsDataURL(file);
+    });
+}
+
+function loadImage(src){
+    return new Promise((resolve,reject)=>{
+        const img=new Image();
+        img.onload=()=>resolve(img);
+        img.onerror=()=>reject(new Error('Chargement de l’image impossible'));
+        img.src=src;
+    });
+}
+
+async function readAndResizeImage(file,maxSide=1600,quality=0.88){
+    const src=await readFileAsDataUrl(file);
+    const img=await loadImage(src);
+    const iw=img.naturalWidth || img.width;
+    const ih=img.naturalHeight || img.height;
+    if(!iw || !ih) throw new Error('Image invalide');
+    const scale=Math.min(1,maxSide/Math.max(iw,ih));
+    const w=Math.max(1,Math.round(iw*scale));
+    const h=Math.max(1,Math.round(ih*scale));
+    const c=document.createElement('canvas');
+    c.width=w;
+    c.height=h;
+    const ctx=c.getContext('2d');
+    ctx.drawImage(img,0,0,w,h);
+    return c.toDataURL('image/jpeg',quality);
+}
 
 async function eyeMeasureLoadDataUrl(side,dataUrl,store){const st=eyeMeasures[side];st.img=await loadImage(dataUrl);st.photoDataUrl=dataUrl;st.points=[];st.running=false;eyeMeasureUpdateResults(side);eyeMeasureDraw(side);if(store)try{localStorage.setItem(PHOTO_KEYS[side],dataUrl);}catch(e){}}
 function eyeMeasureStart(side){const st=eyeMeasures[side];if(!st.img){eyeMeasureSetStatus(side,'Importe d’abord une photo.');return;}st.points=[];st.running=true;eyeMeasureDraw(side);eyeMeasureUpdateResults(side);eyeMeasureSetStatus(side,st.steps[0]);}
@@ -1271,7 +1364,7 @@ async function eyeAiAnalyze(side){const st=eyeMeasures[side];if(!st.photoDataUrl
 function eyeAiExtractJson(text){const m=(text||'').match(/<json>\s*([\s\S]*?)\s*<\/json>/i);if(!m)return null;try{return JSON.parse(m[1]);}catch(e){return null;}}
 function eyeAiApplyLast(side){const text=em(`eyeAiResult_${side}`)?.value||'';const j=eyeAiExtractJson(text)||eyeAiLast[side]?.structured;const lines=[`Avis IA ${side.toUpperCase()} — gradation selon Efron`,text.replace(/<json>[\s\S]*?<\/json>/i,'').trim()].filter(Boolean).join('\n');const zone=em('anam_ia');if(zone&&!zone.value.includes(`Avis IA ${side.toUpperCase()}`)){zone.value=[zone.value,lines].filter(Boolean).join('\n\n');}else if(zone){zone.value=zone.value.replace(new RegExp(`Avis IA ${side.toUpperCase()}[\\s\\S]*?(?=\\n\\nAvis IA|$)`),lines);}if(j)eyeAiApplyStructured(side,j);saveFormState();eyeAiSetStatus(side,'Avis copié dans l’anamnèse.');}
 function eyeAiApplyStructured(side,data){const hyper=Number(data.hyperemie_conjonctivale_bulbaire_grade_efron),limb=Number(data.hyperemie_limbique_grade_efron),paup=Number(data.paupiere_bord_libre_grade_efron);if(Number.isFinite(hyper)&&em(`cb_${side}_hyper`))em(`cb_${side}_hyper`).value=String(Math.max(0,Math.min(4,Math.round(hyper))));if(Number.isFinite(paup)&&em(`pau_${side}_deg`))em(`pau_${side}_deg`).value=String(Math.max(0,Math.min(4,Math.round(paup))));if(String(data.pinguecula||'').toLowerCase().includes('prés')||String(data.pinguecula||'').toLowerCase().includes('possible')){const cb=em(`cb_${side}_ping`);if(cb)cb.checked=true;}const cbRem=em('cb_rem');if(cbRem){const alertes=Array.isArray(data.signes_alerte)?data.signes_alerte.join(', '):String(data.signes_alerte||'pas de signe');cbRem.value=[cbRem.value,`IA ${side.toUpperCase()} Efron — hyperémie bulbaire ${Number.isFinite(hyper)?hyper+'/4':'NE'}, limbique ${Number.isFinite(limb)?limb+'/4':'NE'}, lentille visible : ${data.lentille_visible||'non évalué'}, signes d’alerte : ${alertes||'pas de signe'}`].filter(Boolean).join('\n');}}
-document.addEventListener('DOMContentLoaded',()=>{initAutoSave();eyeMeasureInit();});
+document.addEventListener('DOMContentLoaded',()=>{try{initAutoSave();}catch(e){console.error(e);}try{eyeMeasureInit();}catch(e){console.error(e);alert('Erreur initialisation photo : '+e.message);}});
 
 function showTab(id){
     document.querySelectorAll('.section').forEach(s=>{
@@ -1444,6 +1537,12 @@ function buildExportView(){
             ].filter(Boolean).join(" | "))}
 
             ${buildTextBlock("Synthèse IA — observation photo", txt("anam_ia"))}
+
+            <fieldset style="margin-bottom:8px; border:1px solid #999; padding:6px; border-radius:6px; page-break-inside:avoid; break-inside:avoid;">
+                <legend style="font-weight:bold;">Photos oculaires avec mesures</legend>
+                ${canvasToImgHTML("eyeMeasureCanvas_od","Photo-mesure OD")}
+                ${canvasToImgHTML("eyeMeasureCanvas_og","Photo-mesure OG")}
+            </fieldset>
 
             ${buildTextBlock("Habitudes visuelles", [
                 fieldHasContent(txt("hab_ecran")) ? `Temps écran : ${txt("hab_ecran")} h/j` : "",
