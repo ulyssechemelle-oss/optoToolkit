@@ -219,6 +219,12 @@ button{
 .patient-choice{display:flex;gap:8px;flex-wrap:wrap;}
 .patient-choice button{padding:8px 14px;background:#eee;color:#222;border:1px solid #ccc;}
 .patient-choice button.active{background:#d40511;color:#fff;border-color:#d40511;}
+.patient-rating{display:none;margin-top:10px;padding-top:8px;border-top:1px dashed #ccc;}
+.patient-rating.active{display:block;}
+.patient-rating-label{font-size:12px;color:#555;margin-bottom:5px;}
+.patient-rating-stars{display:flex;gap:6px;flex-wrap:wrap;}
+.patient-rating-stars button{font-size:22px;line-height:1;padding:4px 6px;background:#eee;color:#777;border:1px solid #ccc;border-radius:6px;}
+.patient-rating-stars button.active{background:#d40511;color:#fff;border-color:#d40511;}
 .patient-extra{margin-top:12px;}
 .patient-anam-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;justify-content:flex-end;}
 @media (max-width:800px){.patient-anam-grid{grid-template-columns:1fr}.patient-anam-card{padding:12px}}
@@ -315,7 +321,7 @@ button{
     <div id="patientAnamModal" class="patient-anam-modal" aria-hidden="true">
         <div class="patient-anam-card">
             <h2>Auto-anamnèse patient</h2>
-            <p>Le patient répond par oui/non. Les réponses sont ensuite copiées dans le formulaire principal. Ce questionnaire ne remplace pas l’entretien clinique.</p>
+            <p>Le patient répond par oui/non. Si une réponse est positive, il peut grader la gêne de 1 à 4 étoiles. Les réponses sont ensuite copiées dans le formulaire principal. Ce questionnaire ne remplace pas l’entretien clinique.</p>
 
             <div class="patient-anam-grid">
                 <div class="patient-question" data-q="flou_l" data-label="Vision floue de loin"><div class="q-title">Vision floue de loin ?</div><div class="patient-choice"><button type="button" data-v="oui">Oui</button><button type="button" data-v="non">Non</button></div></div>
@@ -1451,6 +1457,38 @@ function eyeAiExtractJson(text){const m=(text||'').match(/<json>\s*([\s\S]*?)\s*
 function eyeAiApplyLast(side){const text=em(`eyeAiResult_${side}`)?.value||'';const j=eyeAiExtractJson(text)||eyeAiLast[side]?.structured;const lines=[`Avis IA ${side.toUpperCase()} — gradation selon Efron`,text.replace(/<json>[\s\S]*?<\/json>/i,'').trim()].filter(Boolean).join('\n');const zone=em('anam_ia');if(zone&&!zone.value.includes(`Avis IA ${side.toUpperCase()}`)){zone.value=[zone.value,lines].filter(Boolean).join('\n\n');}else if(zone){zone.value=zone.value.replace(new RegExp(`Avis IA ${side.toUpperCase()}[\\s\\S]*?(?=\\n\\nAvis IA|$)`),lines);}if(j)eyeAiApplyStructured(side,j);saveFormState();eyeAiSetStatus(side,'Avis copié dans l’anamnèse.');}
 function eyeAiApplyStructured(side,data){const hyper=Number(data.hyperemie_conjonctivale_bulbaire_grade_efron),limb=Number(data.hyperemie_limbique_grade_efron),paup=Number(data.paupiere_bord_libre_grade_efron);if(Number.isFinite(hyper)&&em(`cb_${side}_hyper`))em(`cb_${side}_hyper`).value=String(Math.max(0,Math.min(4,Math.round(hyper))));if(Number.isFinite(paup)&&em(`pau_${side}_deg`))em(`pau_${side}_deg`).value=String(Math.max(0,Math.min(4,Math.round(paup))));if(String(data.pinguecula||'').toLowerCase().includes('prés')||String(data.pinguecula||'').toLowerCase().includes('possible')){const cb=em(`cb_${side}_ping`);if(cb)cb.checked=true;}const cbRem=em('cb_rem');if(cbRem){const alertes=Array.isArray(data.signes_alerte)?data.signes_alerte.join(', '):String(data.signes_alerte||'pas de signe');cbRem.value=[cbRem.value,`IA ${side.toUpperCase()} Efron — hyperémie bulbaire ${Number.isFinite(hyper)?hyper+'/4':'NE'}, limbique ${Number.isFinite(limb)?limb+'/4':'NE'}, lentille visible : ${data.lentille_visible||'non évalué'}, signes d’alerte : ${alertes||'pas de signe'}`].filter(Boolean).join('\n');}}
 
+
+function patientAnamEnsureRating(q){
+    if(!q)return;
+    let rating=q.querySelector('.patient-rating');
+    if(!rating){
+        rating=document.createElement('div');
+        rating.className='patient-rating';
+        rating.innerHTML='<div class="patient-rating-label">Intensité ressentie par le patient : 1 = léger, 4 = très gênant</div><div class="patient-rating-stars"><button type="button" data-grade="1">★</button><button type="button" data-grade="2">★★</button><button type="button" data-grade="3">★★★</button><button type="button" data-grade="4">★★★★</button></div>';
+        q.appendChild(rating);
+    }
+    rating.classList.add('active');
+}
+
+function patientAnamHideRating(q){
+    if(!q)return;
+    q.removeAttribute('data-grade');
+    const rating=q.querySelector('.patient-rating');
+    if(rating){
+        rating.classList.remove('active');
+        rating.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+    }
+}
+
+function patientAnamRate(button){
+    const q=button.closest('.patient-question');
+    if(!q)return;
+    const grade=button.getAttribute('data-grade')||'';
+    q.setAttribute('data-grade',grade);
+    q.querySelectorAll('.patient-rating-stars button').forEach(b=>b.classList.remove('active'));
+    button.classList.add('active');
+}
+
 function patientAnamOpen(){
     const modal=em('patientAnamModal');
     if(!modal)return;
@@ -1468,7 +1506,10 @@ function patientAnamClose(){
 function patientAnamReset(){
     document.querySelectorAll('#patientAnamModal .patient-question').forEach(q=>{
         q.removeAttribute('data-answer');
+        q.removeAttribute('data-grade');
         q.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+        const rating=q.querySelector('.patient-rating');
+        if(rating)rating.classList.remove('active');
     });
     const motif=em('patientAnamMotif');
     const notes=em('patientAnamNotes');
@@ -1481,8 +1522,10 @@ function patientAnamAnswer(button){
     if(!q)return;
     const value=button.getAttribute('data-v')||'';
     q.setAttribute('data-answer',value);
-    q.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+    q.querySelectorAll('.patient-choice button').forEach(b=>b.classList.remove('active'));
     button.classList.add('active');
+    if(value==='oui') patientAnamEnsureRating(q);
+    else patientAnamHideRating(q);
 }
 
 function patientAnamCollect(){
@@ -1491,7 +1534,8 @@ function patientAnamCollect(){
         const key=q.getAttribute('data-q');
         const label=q.getAttribute('data-label')||key;
         const value=q.getAttribute('data-answer')||'';
-        if(key)answers[key]={label,value};
+        const grade=q.getAttribute('data-grade')||'';
+        if(key)answers[key]={label,value,grade};
     });
     return answers;
 }
@@ -1504,10 +1548,16 @@ function appendUniqueLineToTextarea(id,line){
     el.value=[current,line].filter(Boolean).join(current?'\n':'');
 }
 
+
+function patientAnamLabelWithGrade(answer){
+    if(!answer)return '';
+    return answer.grade ? `${answer.label} (${answer.grade}/4)` : answer.label;
+}
+
 function patientAnamApply(){
     const answers=patientAnamCollect();
     const isYes=k=>answers[k]&&answers[k].value==='oui';
-    const yesLabels=Object.values(answers).filter(a=>a.value==='oui').map(a=>a.label);
+    const yesLabels=Object.values(answers).filter(a=>a.value==='oui').map(a=>a.grade ? `${a.label} (${a.grade}/4)` : a.label);
     const noLabels=Object.values(answers).filter(a=>a.value==='non').map(a=>a.label);
     const motifTxt=(em('patientAnamMotif')?.value||'').trim();
     const notesTxt=(em('patientAnamNotes')?.value||'').trim();
@@ -1531,7 +1581,7 @@ function patientAnamApply(){
     }
 
     const autres=[];
-    ['secheresse','douleur','rougeur','corps_etranger','lentilles'].forEach(k=>{if(isYes(k))autres.push(answers[k].label);});
+    ['secheresse','douleur','rougeur','corps_etranger','lentilles'].forEach(k=>{if(isYes(k))autres.push(patientAnamLabelWithGrade(answers[k]));});
     if(autres.length)appendUniqueLineToTextarea('sym_autres','Auto-anamnèse : '+autres.join(', ')+'.');
 
     const antMed=[];
@@ -1549,6 +1599,8 @@ function patientAnamApply(){
 }
 
 document.addEventListener('click',e=>{
+    const ratingBtn=e.target.closest('#patientAnamModal .patient-rating-stars button');
+    if(ratingBtn){patientAnamRate(ratingBtn);return;}
     const btn=e.target.closest('#patientAnamModal .patient-choice button');
     if(btn)patientAnamAnswer(btn);
 });
