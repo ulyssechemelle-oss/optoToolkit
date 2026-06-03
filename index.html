@@ -1503,6 +1503,7 @@ const patientAnamLangData = {
 
 const patientAnamSections = {
     'Motif principal':{de:'Hauptgrund',it:'Motivo principale',rm:'Motiv principal',en:'Main reason'},
+    'Symptômes':{de:'Symptome',it:'Sintomi',rm:'Sintoms',en:'Symptoms'},
     'Correction actuelle':{de:'Aktuelle Korrektur',it:'Correzione attuale',rm:'Correctura actuala',en:'Current correction'},
     'Lentilles de contact':{de:'Kontaktlinsen',it:'Lenti a contatto',rm:'Lentillas da contact',en:'Contact lenses'},
     'Historique visuel':{de:'Sehgeschichte',it:'Storia visiva',rm:'Istorgia visuala',en:'Visual history'},
@@ -1519,9 +1520,17 @@ function patientAnamHasGlasses(){return ['lunettes','deux'].includes(patientAnam
 function patientAnamHasLenses(){return ['lentilles','deux'].includes(patientAnamVal('correction_actuelle'));}
 function patientAnamSeenOph(){return patientAnamYes('ophtalmo_deja');}
 function patientAnamHadOrthoptie(){return patientAnamYes('orthoptie');}
+function patientAnamHasBlurryVision(){return patientAnamYes('sym_vision_floue') || patientAnamVal('motif_principal')==='vision_floue';}
 
 const patientAnamQuestions = [
     {key:'motif_principal', section:'Motif principal', label:'Motif principal', question:'Quel est le motif principal de votre visite ?', type:'choice', choices:[['controle_vue','Contrôle de la vue'],['nouvelles_lunettes','Nouvelles lunettes'],['lentilles','Lentilles'],['vision_floue','Vision floue'],['fatigue_visuelle','Fatigue visuelle'],['oeil_rouge','Œil rouge'],['secheresse','Sécheresse'],['vision_double','Vision double'],['autre','Autre']], i18n:{de:'Was ist der Hauptgrund Ihres Besuchs?',it:'Qual è il motivo principale della visita?',rm:'Tge è il motiv principal da Vossa visita?',en:'What is the main reason for your visit?'}, choiceI18n:{de:{controle_vue:'Sehtest',nouvelles_lunettes:'Neue Brille',lentilles:'Kontaktlinsen',vision_floue:'Verschwommenes Sehen',fatigue_visuelle:'Augenermüdung',oeil_rouge:'Rotes Auge',secheresse:'Trockene Augen',vision_double:'Doppeltsehen',autre:'Andere'},it:{controle_vue:'Controllo della vista',nouvelles_lunettes:'Nuovi occhiali',lentilles:'Lenti a contatto',vision_floue:'Vista sfocata',fatigue_visuelle:'Affaticamento visivo',oeil_rouge:'Occhio rosso',secheresse:'Secchezza',vision_double:'Visione doppia',autre:'Altro'},rm:{controle_vue:'Controlla da la vesida',nouvelles_lunettes:'Novs egliers',lentilles:'Lentillas',vision_floue:'Vesida nunclera',fatigue_visuelle:'Stanchezza visuala',oeil_rouge:'Egl cotschen',secheresse:'Setgira',vision_double:'Vesida dubla',autre:'Auter'},en:{controle_vue:'Eye check-up',nouvelles_lunettes:'New glasses',lentilles:'Contact lenses',vision_floue:'Blurry vision',fatigue_visuelle:'Eye strain',oeil_rouge:'Red eye',secheresse:'Dryness',vision_double:'Double vision',autre:'Other'}}},
+    {key:'sym_vision_floue', section:'Symptômes', label:'Vision floue', question:'Avez-vous une vision floue ?', type:'yesno', i18n:{de:'Haben Sie verschwommenes Sehen?',it:'Ha la vista sfocata?',rm:'Avais Vus ina vesida nunclera?',en:'Do you have blurry vision?'}},
+    {key:'sym_vision_floue_distance', section:'Symptômes', label:'Vision floue — distance', question:'La vision floue concerne-t-elle ?', type:'choice', if:patientAnamHasBlurryVision, choices:[['vl','La vision de loin'],['vp','La vision de près'],['deux','Les deux']], i18n:{de:'Betrifft das verschwommene Sehen?',it:'La vista sfocata riguarda?',rm:'La vesida nunclera pertutga?',en:'Does the blurry vision affect?'}, choiceI18n:{de:{vl:'Ferne',vp:'Nähe',deux:'Beides'},it:{vl:'Da lontano',vp:'Da vicino',deux:'Entrambi'},rm:{vl:'Dalunsch',vp:'Datiers',deux:'Omadus'},en:{vl:'Distance vision',vp:'Near vision',deux:'Both'}}},
+    {key:'sym_cephalees_patient', section:'Symptômes', label:'Maux de tête', question:'Avez-vous des maux de tête ?', type:'yesno', gradeOnYes:true, i18n:{de:'Haben Sie Kopfschmerzen?',it:'Ha mal di testa?',rm:'Avais Vus mal il chau?',en:'Do you have headaches?'}},
+    {key:'sym_fatigue_patient', section:'Symptômes', label:'Fatigue visuelle', question:'Avez-vous de la fatigue visuelle ?', type:'yesno', gradeOnYes:true, i18n:{de:'Haben Sie Augenermüdung?',it:'Ha affaticamento visivo?',rm:'Avais Vus stanchezza visuala?',en:'Do you have eye strain?'}},
+    {key:'sym_diplopie_patient', section:'Symptômes', label:'Diplopie', question:'Voyez-vous parfois double ?', type:'yesno', gradeOnYes:true, i18n:{de:'Sehen Sie manchmal doppelt?',it:'Vede a volte doppio?',rm:'Vesais Vus mintgatant dubel?',en:'Do you sometimes see double?'}},
+    {key:'sym_photophobie_patient', section:'Symptômes', label:'Photophobie', question:'Êtes-vous gêné par la lumière ?', type:'yesno', gradeOnYes:true, i18n:{de:'Stört Sie Licht?',it:'La luce le dà fastidio?',rm:'As disturba la glisch?',en:'Are you bothered by light?'}},
+    {key:'sym_larmoiement_patient', section:'Symptômes', label:'Larmoiement', question:'Vos yeux larmoient-ils ?', type:'yesno', gradeOnYes:true, i18n:{de:'Tränen Ihre Augen?',it:'I suoi occhi lacrimano?',rm:'Larmagian Voss egls?',en:'Do your eyes water?'}},
     {key:'correction_actuelle', section:'Correction actuelle', label:'Correction actuelle', question:'Portez-vous actuellement une correction ?', type:'choice', choices:[['lunettes','Lunettes'],['lentilles','Lentilles'],['deux','Les deux'],['aucun','Aucun équipement']], i18n:{de:'Tragen Sie aktuell eine Sehhilfe?',it:'Porta attualmente una correzione?',rm:'Purtai Vus actualmain ina correctura?',en:'Do you currently wear vision correction?'}, choiceI18n:{de:{lunettes:'Brille',lentilles:'Kontaktlinsen',deux:'Beides',aucun:'Keine Sehhilfe'},it:{lunettes:'Occhiali',lentilles:'Lenti a contatto',deux:'Entrambi',aucun:'Nessuna correzione'},rm:{lunettes:'Egliers',lentilles:'Lentillas',deux:'Omadus',aucun:'Nagins meds'},en:{lunettes:'Glasses',lentilles:'Contact lenses',deux:'Both',aucun:'No correction'}}},
     {key:'qualite_lunettes', section:'Correction actuelle', label:'Qualité de vision avec lunettes', question:'Comment jugez-vous votre vision avec vos lunettes ?', type:'rating', if:patientAnamHasGlasses, gradeLabel:'1 = très mauvaise, 4 = très satisfaisante', i18n:{de:'Wie beurteilen Sie Ihr Sehen mit Ihrer Brille?',it:'Come valuta la vista con gli occhiali?',rm:'Co valitais Vossa vesida cun ils egliers?',en:'How do you rate your vision with your glasses?'}, gradeI18n:{de:'1 = sehr schlecht, 4 = sehr zufriedenstellend',it:'1 = molto scarsa, 4 = molto soddisfacente',rm:'1 = fitg nausch, 4 = fitg satisfaschenta',en:'1 = very poor, 4 = very satisfactory'}},
 
@@ -1663,13 +1672,16 @@ function patientAnamApply(){
     const text=k=>patientAnamChoiceText(answers[k]);
     const yesGrade=k=>patientAnamLabelWithGrade(answers[k]);
 
-    if(em('sym_flou'))em('sym_flou').checked=val('motif_principal')==='vision_floue'||isYes('lentille_vision_fluctuante');
-    if(em('sym_fatigue'))em('sym_fatigue').checked=val('motif_principal')==='fatigue_visuelle';
-    if(em('sym_diplopie'))em('sym_diplopie').checked=val('motif_principal')==='vision_double';
-    if(em('sym_larmoie'))em('sym_larmoie').checked=false;
+    if(em('sym_flou'))em('sym_flou').checked=isYes('sym_vision_floue')||val('motif_principal')==='vision_floue'||isYes('lentille_vision_fluctuante');
+    if(em('sym_ceph'))em('sym_ceph').checked=isYes('sym_cephalees_patient');
+    if(em('sym_fatigue'))em('sym_fatigue').checked=isYes('sym_fatigue_patient')||val('motif_principal')==='fatigue_visuelle';
+    if(em('sym_diplopie'))em('sym_diplopie').checked=isYes('sym_diplopie_patient')||val('motif_principal')==='vision_double';
+    if(em('sym_photo'))em('sym_photo').checked=isYes('sym_photophobie_patient');
+    if(em('sym_larmoie'))em('sym_larmoie').checked=isYes('sym_larmoiement_patient');
 
     const motifLines=[];
     if(has('motif_principal'))motifLines.push('Motif principal : '+text('motif_principal')+'.');
+    if(has('sym_vision_floue'))motifLines.push('Vision floue : '+patientAnamYesText(answers.sym_vision_floue)+(has('sym_vision_floue_distance')?' — '+text('sym_vision_floue_distance'):'')+'.');
     if(has('correction_actuelle'))motifLines.push('Correction actuelle : '+text('correction_actuelle')+'.');
     if(has('qualite_lunettes'))motifLines.push('Qualité de vision avec lunettes : '+text('qualite_lunettes')+'.');
     if(has('derniere_visite_ophtalmo'))motifLines.push('Dernière consultation ophtalmologique : '+text('derniere_visite_ophtalmo')+'.');
@@ -1677,7 +1689,8 @@ function patientAnamApply(){
 
     const sympt=[];
     if(val('motif_principal'))sympt.push('Motif : '+text('motif_principal'));
-    ['lentille_secheresse','lentille_rougeur','lentille_vision_fluctuante'].forEach(k=>{if(isYes(k))sympt.push(yesGrade(k));});
+    if(isYes('sym_vision_floue'))sympt.push('Vision floue'+(has('sym_vision_floue_distance')?' : '+text('sym_vision_floue_distance'):''));
+    ['sym_cephalees_patient','sym_fatigue_patient','sym_diplopie_patient','sym_photophobie_patient','sym_larmoiement_patient','lentille_secheresse','lentille_rougeur','lentille_vision_fluctuante'].forEach(k=>{if(isYes(k))sympt.push(yesGrade(k));});
     if(val('lentille_confort'))sympt.push('Confort lentilles : '+text('lentille_confort'));
     if(sympt.length)appendUniqueLineToTextarea('sym_autres','Auto-anamnèse : '+sympt.join(', ')+'.');
 
